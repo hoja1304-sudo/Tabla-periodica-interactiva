@@ -1,0 +1,1189 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instrumento interactivo: Tabla periódica internacional</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --panel: #fffdf8;
+      --ink: #20231f;
+      --muted: #646b61;
+      --line: #d8d2c5;
+      --accent: #28786f;
+      --accent-dark: #1f5d56;
+      --focus: #c56b3b;
+      --alkali: #c8d8ff;
+      --alkaline: #bfe1f2;
+      --transition: #bff0ec;
+      --post: #d8edb6;
+      --metalloid: #f0efb8;
+      --nonmetal: #d8c9f4;
+      --halogen: #f5bae5;
+      --noble: #bdf1c9;
+      --lanthanoid: #f6d8a6;
+      --actinoid: #f4b7b6;
+      --unknown: #d4d8d8;
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Aptos", "Segoe UI", system-ui, sans-serif;
+      background:
+        linear-gradient(110deg, rgba(40, 120, 111, .10), transparent 34%),
+        linear-gradient(260deg, rgba(197, 107, 59, .10), transparent 30%),
+        var(--bg);
+      color: var(--ink);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    button:active {
+      transform: translateY(1px) scale(.99);
+    }
+
+    .app {
+      width: min(1520px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
+
+    .hero, .quick-card, .panel, .exercise, .guide {
+      background: rgba(255, 253, 248, .88);
+      border: 1px solid rgba(216, 210, 197, .95);
+      border-radius: 8px;
+      box-shadow: 0 18px 45px rgba(79, 70, 53, .08);
+    }
+
+    .hero {
+      padding: clamp(18px, 3vw, 34px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      max-width: 780px;
+      font-size: clamp(2rem, 4vw, 4.2rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .lede {
+      margin: 0;
+      max-width: 72ch;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.6vw, 1.18rem);
+      line-height: 1.55;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 7px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: white;
+      font-weight: 750;
+      border: 1px solid transparent;
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .btn.ghost {
+      background: #ece8dc;
+      color: var(--ink);
+    }
+
+    .hero-stat {
+      min-width: 148px;
+      align-self: end;
+      border-left: 1px solid var(--line);
+      padding-left: 18px;
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 2.8rem;
+      line-height: 1;
+      color: var(--accent-dark);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hero-stat span {
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .quick-card {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .quick-card h2, .panel h2, .exercise h2, .guide h2 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .quick-metric {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 12px;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .mini-symbol {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background: var(--transition);
+      border: 1px solid rgba(32, 35, 31, .18);
+      font-size: 1.55rem;
+      font-weight: 850;
+    }
+
+    .quick-metric p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 220px 190px auto;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    input:focus, select:focus, button:focus-visible {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px rgba(197, 107, 59, .18);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(330px, 420px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .table-wrap {
+      min-width: 0;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .72);
+      color: var(--muted);
+      padding: 6px 10px;
+      font-size: .82rem;
+      font-weight: 650;
+    }
+
+    .swatch {
+      width: 13px;
+      height: 13px;
+      border-radius: 3px;
+      border: 1px solid rgba(32, 35, 31, .16);
+    }
+
+    .periodic-shell {
+      overflow: auto;
+      padding-bottom: 8px;
+      scrollbar-color: var(--accent) #ece8dc;
+    }
+
+    .periodic-table {
+      min-width: 980px;
+      display: grid;
+      grid-template-columns: repeat(18, minmax(46px, 1fr));
+      grid-template-rows: repeat(7, minmax(72px, auto));
+      gap: 5px;
+      padding: 8px;
+      background: rgba(255, 253, 248, .58);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .series-table {
+      min-width: 980px;
+      display: grid;
+      grid-template-columns: repeat(15, minmax(46px, 1fr));
+      gap: 5px;
+      margin-top: 8px;
+      padding: 8px 8px 8px calc((100% / 18) * 2 + 13px);
+      background: rgba(255, 253, 248, .58);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .element {
+      position: relative;
+      min-height: 72px;
+      border: 1px solid rgba(32, 35, 31, .22);
+      border-radius: 6px;
+      padding: 5px;
+      color: var(--ink);
+      text-align: left;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
+    }
+
+    .element:hover, .element.selected {
+      outline: 3px solid rgba(197, 107, 59, .38);
+      transform: translateY(-1px);
+    }
+
+    .element.dimmed {
+      opacity: .22;
+      filter: grayscale(.35);
+    }
+
+    .num {
+      position: absolute;
+      right: 5px;
+      top: 4px;
+      font-size: .68rem;
+      font-weight: 700;
+      color: rgba(32, 35, 31, .72);
+    }
+
+    .sym {
+      display: block;
+      margin-top: 14px;
+      font-size: clamp(1.1rem, 1.2vw, 1.55rem);
+      line-height: 1;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .name {
+      display: block;
+      margin-top: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: .66rem;
+      text-align: center;
+    }
+
+    .mass {
+      display: block;
+      margin-top: 2px;
+      font-size: .56rem;
+      color: rgba(32, 35, 31, .62);
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .panel, .exercise, .guide {
+      padding: 16px;
+    }
+
+    .side {
+      display: grid;
+      gap: 14px;
+      position: sticky;
+      top: 12px;
+    }
+
+    .element-card {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin: 14px 0;
+    }
+
+    .big-tile {
+      display: grid;
+      place-items: center;
+      width: 96px;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      border: 1px solid rgba(32, 35, 31, .18);
+      font-size: 2.7rem;
+      font-weight: 900;
+    }
+
+    .element-title h3 {
+      margin: 0 0 4px;
+      font-size: 1.55rem;
+    }
+
+    .element-title p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .fact {
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+    }
+
+    .fact span {
+      display: block;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .fact strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 1rem;
+    }
+
+    .use {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.48;
+    }
+
+    .exercise {
+      display: grid;
+      gap: 12px;
+    }
+
+    .question {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.4;
+      font-weight: 760;
+    }
+
+    .answers {
+      display: grid;
+      gap: 8px;
+    }
+
+    .answer {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #fffbf1;
+      color: var(--ink);
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .answer.correct {
+      background: #dcefe7;
+      border-color: #76aa94;
+    }
+
+    .answer.wrong {
+      background: #f8ddd4;
+      border-color: #d39780;
+    }
+
+    .feedback {
+      min-height: 34px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .score {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      font-weight: 700;
+    }
+
+    .guide {
+      display: grid;
+      gap: 10px;
+    }
+
+    .guide ol {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .guide li + li {
+      margin-top: 6px;
+    }
+
+    .signature {
+      margin-top: 18px;
+      padding: 16px clamp(14px, 2vw, 22px);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid rgba(216, 210, 197, .95);
+      border-radius: 8px;
+      background: rgba(255, 253, 248, .74);
+      color: var(--muted);
+    }
+
+    .signature strong {
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    .signature span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .alkali { background: var(--alkali); }
+    .alkaline { background: var(--alkaline); }
+    .transition { background: var(--transition); }
+    .post { background: var(--post); }
+    .metalloid { background: var(--metalloid); }
+    .nonmetal { background: var(--nonmetal); }
+    .halogen { background: var(--halogen); }
+    .noble { background: var(--noble); }
+    .lanthanoid { background: var(--lanthanoid); }
+    .actinoid { background: var(--actinoid); }
+    .unknown { background: var(--unknown); }
+
+    @media (max-width: 1080px) {
+      header, main {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        position: static;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        width: min(100% - 16px, 1520px);
+        padding-top: 10px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stat {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+        padding: 12px 0 0;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .facts {
+        grid-template-columns: 1fr;
+      }
+
+      .element-card {
+        grid-template-columns: 76px 1fr;
+      }
+
+      .big-tile {
+        width: 76px;
+        font-size: 2.15rem;
+      }
+
+      .periodic-table, .series-table {
+        min-width: 860px;
+      }
+
+      .element {
+        min-height: 66px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <section class="hero" aria-labelledby="title">
+        <div>
+          <h1 id="title">Tabla periódica internacional interactiva</h1>
+          <p class="lede">Instrumento funcional para explorar elementos, extraer información química básica, escuchar explicaciones y practicar con ejercicios de número atómico, electrones y neutrones.</p>
+          <div class="hero-actions">
+            <button class="btn" id="startExercise" type="button">Iniciar práctica</button>
+            <button class="btn secondary" id="speakIntro" type="button">Escuchar guía</button>
+            <button class="btn ghost" id="randomElement" type="button">Elemento al azar</button>
+          </div>
+        </div>
+        <div class="hero-stat" aria-label="Resumen del instrumento">
+          <strong>118</strong>
+          <span>elementos organizados por número atómico, grupo, periodo y familia.</span>
+        </div>
+      </section>
+
+      <aside class="quick-card" aria-labelledby="quickTitle">
+        <h2 id="quickTitle">Lectura rápida</h2>
+        <div class="quick-metric">
+          <span class="mini-symbol" id="quickSymbol">H</span>
+          <p id="quickText">Toca cualquier elemento para ver masa atómica, categoría, ubicación y uso frecuente.</p>
+        </div>
+        <button class="btn secondary" id="speakSelected" type="button">Leer elemento seleccionado</button>
+      </aside>
+    </header>
+
+    <section class="toolbar" aria-label="Herramientas de búsqueda y filtro">
+      <div class="field">
+        <label for="search">Buscar por nombre, símbolo o número</label>
+        <input id="search" type="search" placeholder="Ejemplo: oxígeno, Fe, 79">
+      </div>
+      <div class="field">
+        <label for="categoryFilter">Familia química</label>
+        <select id="categoryFilter">
+          <option value="all">Todas las familias</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="periodFilter">Periodo</label>
+        <select id="periodFilter">
+          <option value="all">Todos</option>
+          <option value="1">Periodo 1</option>
+          <option value="2">Periodo 2</option>
+          <option value="3">Periodo 3</option>
+          <option value="4">Periodo 4</option>
+          <option value="5">Periodo 5</option>
+          <option value="6">Periodo 6</option>
+          <option value="7">Periodo 7</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <button class="btn secondary" id="clearFilters" type="button">Limpiar</button>
+      </div>
+    </section>
+
+    <main>
+      <section class="table-wrap" aria-label="Tabla periódica">
+        <div class="legend" id="legend"></div>
+        <div class="periodic-shell">
+          <div class="periodic-table" id="periodicTable"></div>
+          <div class="series-table" id="lanthanoidTable" aria-label="Lantanoides"></div>
+          <div class="series-table" id="actinoidTable" aria-label="Actinoides"></div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="panel" aria-labelledby="infoTitle">
+          <h2 id="infoTitle">Ficha del elemento</h2>
+          <div class="element-card">
+            <div class="big-tile nonmetal" id="detailTile">H</div>
+            <div class="element-title">
+              <h3 id="detailName">Hidrógeno</h3>
+              <p id="detailSummary">Número atómico 1. No metal del periodo 1 y grupo 1.</p>
+            </div>
+          </div>
+          <div class="facts">
+            <div class="fact"><span>Número atómico</span><strong id="detailNumber">1</strong></div>
+            <div class="fact"><span>Masa atómica</span><strong id="detailMass">1.008</strong></div>
+            <div class="fact"><span>Grupo</span><strong id="detailGroup">1</strong></div>
+            <div class="fact"><span>Periodo</span><strong id="detailPeriod">1</strong></div>
+            <div class="fact"><span>Familia</span><strong id="detailCategory">Otros no metales</strong></div>
+            <div class="fact"><span>Estado usual</span><strong id="detailState">Gas</strong></div>
+          </div>
+          <p class="use" id="detailUse">Se usa en combustibles, síntesis de amoníaco y celdas de combustible.</p>
+        </section>
+
+        <section class="exercise" aria-labelledby="exerciseTitle">
+          <h2 id="exerciseTitle">Ejercicios</h2>
+          <p class="question" id="question">Pulsa “Iniciar práctica” para generar un ítem.</p>
+          <div class="answers" id="answers"></div>
+          <p class="feedback" id="feedback" aria-live="polite">Los ejercicios se revisan al instante.</p>
+          <div class="hero-actions">
+            <button class="btn" id="nextQuestion" type="button">Nuevo ítem</button>
+            <button class="btn secondary" id="speakQuestion" type="button">Leer ítem</button>
+            <button class="btn ghost" id="voiceAnswer" type="button">Responder por voz</button>
+          </div>
+          <div class="score">
+            <span>Aciertos: <span id="correctCount">0</span></span>
+            <span>Intentos: <span id="attemptCount">0</span></span>
+          </div>
+        </section>
+
+        <section class="guide" aria-labelledby="guideTitle">
+          <h2 id="guideTitle">Cómo extraer información</h2>
+          <ol>
+            <li>Localiza el número atómico para identificar el elemento.</li>
+            <li>Observa el grupo vertical para inferir propiedades semejantes.</li>
+            <li>Usa el periodo horizontal para ubicar el nivel de energía principal.</li>
+            <li>Compara colores para reconocer familias químicas.</li>
+            <li>Relaciona símbolo, nombre y uso con los ejercicios.</li>
+          </ol>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="signature" aria-label="Créditos del instrumento">
+      <span><strong>Elaborado por:</strong>&nbsp;Alberto Jiménez Ruiz</span>
+      <span>Asesor de Matemática, DRE-Cartago, 2026</span>
+    </footer>
+  </div>
+
+  <script>
+    const categories = {
+      alkali: "Metales alcalinos",
+      alkaline: "Metales alcalinotérreos",
+      transition: "Metales de transición",
+      post: "Otros metales",
+      metalloid: "Metaloides",
+      nonmetal: "Otros no metales",
+      halogen: "Halógenos",
+      noble: "Gases nobles",
+      lanthanoid: "Lantanoides",
+      actinoid: "Actinoides",
+      unknown: "Propiedades no confirmadas"
+    };
+
+    const uses = {
+      H: "Se usa en combustibles, síntesis de amoníaco y celdas de combustible.",
+      He: "Se usa en globos, criogenia, buceo profundo y equipos de resonancia magnética.",
+      Li: "Se usa en baterías recargables, aleaciones ligeras y algunos tratamientos médicos.",
+      C: "Forma la base de la química orgánica; aparece en grafito, diamante, combustibles y biomoléculas.",
+      N: "Es esencial en proteínas y fertilizantes; el nitrógeno líquido se usa para enfriar materiales.",
+      O: "Es indispensable para la respiración y participa en combustión, agua y óxidos.",
+      F: "Se usa en compuestos fluorados, pastas dentales y materiales resistentes.",
+      Na: "Se encuentra en la sal común y se usa en lámparas y procesos químicos.",
+      Mg: "Se usa en aleaciones ligeras, fuegos artificiales y suplementos minerales.",
+      Al: "Se usa en envases, estructuras, cables y aleaciones resistentes a la corrosión.",
+      Si: "Es clave en chips, paneles solares, vidrio y cerámicas.",
+      P: "Se usa en fertilizantes, detergentes especiales y cerillas de seguridad.",
+      S: "Se usa en fertilizantes, vulcanización del caucho y producción de ácido sulfúrico.",
+      Cl: "Se usa para desinfectar agua y fabricar plásticos como el PVC.",
+      K: "Es un nutriente esencial y se usa en fertilizantes.",
+      Ca: "Forma huesos, dientes, caliza y cemento.",
+      Fe: "Es la base del acero y se usa en construcción, herramientas y transporte.",
+      Cu: "Se usa en cables eléctricos, tuberías y aleaciones como el bronce.",
+      Zn: "Se usa para galvanizar acero, fabricar latón y en baterías.",
+      Br: "Se usa en retardantes de llama y compuestos fotográficos históricos.",
+      Ag: "Se usa en joyería, contactos eléctricos, fotografía y materiales antimicrobianos.",
+      I: "Es esencial para la tiroides y se usa como antiséptico.",
+      Au: "Se usa en joyería, electrónica, odontología y reservas de valor.",
+      Hg: "Se usó en termómetros y lámparas; requiere manejo cuidadoso por su toxicidad.",
+      Pb: "Se usa en baterías y blindaje contra radiación; es tóxico y debe controlarse.",
+      U: "Se usa como combustible nuclear y en investigación energética."
+    };
+
+    const raw = `1,H,Hidrógeno,1,1,1.008,nonmetal,Gas
+2,He,Helio,18,1,4.0026,noble,Gas
+3,Li,Litio,1,2,6.94,alkali,Sólido
+4,Be,Berilio,2,2,9.0122,alkaline,Sólido
+5,B,Boro,13,2,10.81,metalloid,Sólido
+6,C,Carbono,14,2,12.011,nonmetal,Sólido
+7,N,Nitrógeno,15,2,14.007,nonmetal,Gas
+8,O,Oxígeno,16,2,15.999,nonmetal,Gas
+9,F,Flúor,17,2,18.998,halogen,Gas
+10,Ne,Neón,18,2,20.180,noble,Gas
+11,Na,Sodio,1,3,22.990,alkali,Sólido
+12,Mg,Magnesio,2,3,24.305,alkaline,Sólido
+13,Al,Aluminio,13,3,26.982,post,Sólido
+14,Si,Silicio,14,3,28.085,metalloid,Sólido
+15,P,Fósforo,15,3,30.974,nonmetal,Sólido
+16,S,Azufre,16,3,32.06,nonmetal,Sólido
+17,Cl,Cloro,17,3,35.45,halogen,Gas
+18,Ar,Argón,18,3,39.948,noble,Gas
+19,K,Potasio,1,4,39.098,alkali,Sólido
+20,Ca,Calcio,2,4,40.078,alkaline,Sólido
+21,Sc,Escandio,3,4,44.956,transition,Sólido
+22,Ti,Titanio,4,4,47.867,transition,Sólido
+23,V,Vanadio,5,4,50.942,transition,Sólido
+24,Cr,Cromo,6,4,51.996,transition,Sólido
+25,Mn,Manganeso,7,4,54.938,transition,Sólido
+26,Fe,Hierro,8,4,55.845,transition,Sólido
+27,Co,Cobalto,9,4,58.933,transition,Sólido
+28,Ni,Níquel,10,4,58.693,transition,Sólido
+29,Cu,Cobre,11,4,63.546,transition,Sólido
+30,Zn,Zinc,12,4,65.38,transition,Sólido
+31,Ga,Galio,13,4,69.723,post,Sólido
+32,Ge,Germanio,14,4,72.630,metalloid,Sólido
+33,As,Arsénico,15,4,74.922,metalloid,Sólido
+34,Se,Selenio,16,4,78.971,nonmetal,Sólido
+35,Br,Bromo,17,4,79.904,halogen,Líquido
+36,Kr,Kriptón,18,4,83.798,noble,Gas
+37,Rb,Rubidio,1,5,85.468,alkali,Sólido
+38,Sr,Estroncio,2,5,87.62,alkaline,Sólido
+39,Y,Itrio,3,5,88.906,transition,Sólido
+40,Zr,Circonio,4,5,91.224,transition,Sólido
+41,Nb,Niobio,5,5,92.906,transition,Sólido
+42,Mo,Molibdeno,6,5,95.95,transition,Sólido
+43,Tc,Tecnecio,7,5,98,transition,Sólido
+44,Ru,Rutenio,8,5,101.07,transition,Sólido
+45,Rh,Rodio,9,5,102.91,transition,Sólido
+46,Pd,Paladio,10,5,106.42,transition,Sólido
+47,Ag,Plata,11,5,107.87,transition,Sólido
+48,Cd,Cadmio,12,5,112.41,transition,Sólido
+49,In,Indio,13,5,114.82,post,Sólido
+50,Sn,Estaño,14,5,118.71,post,Sólido
+51,Sb,Antimonio,15,5,121.76,metalloid,Sólido
+52,Te,Telurio,16,5,127.60,metalloid,Sólido
+53,I,Yodo,17,5,126.90,halogen,Sólido
+54,Xe,Xenón,18,5,131.29,noble,Gas
+55,Cs,Cesio,1,6,132.91,alkali,Sólido
+56,Ba,Bario,2,6,137.33,alkaline,Sólido
+57,La,Lantano,3,6,138.91,lanthanoid,Sólido
+58,Ce,Cerio,4,6,140.12,lanthanoid,Sólido
+59,Pr,Praseodimio,5,6,140.91,lanthanoid,Sólido
+60,Nd,Neodimio,6,6,144.24,lanthanoid,Sólido
+61,Pm,Prometio,7,6,145,lanthanoid,Sólido
+62,Sm,Samario,8,6,150.36,lanthanoid,Sólido
+63,Eu,Europio,9,6,151.96,lanthanoid,Sólido
+64,Gd,Gadolinio,10,6,157.25,lanthanoid,Sólido
+65,Tb,Terbio,11,6,158.93,lanthanoid,Sólido
+66,Dy,Disprosio,12,6,162.50,lanthanoid,Sólido
+67,Ho,Holmio,13,6,164.93,lanthanoid,Sólido
+68,Er,Erbio,14,6,167.26,lanthanoid,Sólido
+69,Tm,Tulio,15,6,168.93,lanthanoid,Sólido
+70,Yb,Iterbio,16,6,173.05,lanthanoid,Sólido
+71,Lu,Lutecio,17,6,174.97,lanthanoid,Sólido
+72,Hf,Hafnio,4,6,178.49,transition,Sólido
+73,Ta,Tantalio,5,6,180.95,transition,Sólido
+74,W,Wolframio,6,6,183.84,transition,Sólido
+75,Re,Renio,7,6,186.21,transition,Sólido
+76,Os,Osmio,8,6,190.23,transition,Sólido
+77,Ir,Iridio,9,6,192.22,transition,Sólido
+78,Pt,Platino,10,6,195.08,transition,Sólido
+79,Au,Oro,11,6,196.97,transition,Sólido
+80,Hg,Mercurio,12,6,200.59,transition,Líquido
+81,Tl,Talio,13,6,204.38,post,Sólido
+82,Pb,Plomo,14,6,207.2,post,Sólido
+83,Bi,Bismuto,15,6,208.98,post,Sólido
+84,Po,Polonio,16,6,209,post,Sólido
+85,At,Astato,17,6,210,halogen,Sólido
+86,Rn,Radón,18,6,222,noble,Gas
+87,Fr,Francio,1,7,223,alkali,Sólido
+88,Ra,Radio,2,7,226,alkaline,Sólido
+89,Ac,Actinio,3,7,227,actinoid,Sólido
+90,Th,Torio,4,7,232.04,actinoid,Sólido
+91,Pa,Protactinio,5,7,231.04,actinoid,Sólido
+92,U,Uranio,6,7,238.03,actinoid,Sólido
+93,Np,Neptunio,7,7,237,actinoid,Sólido
+94,Pu,Plutonio,8,7,244,actinoid,Sólido
+95,Am,Americio,9,7,243,actinoid,Sólido
+96,Cm,Curio,10,7,247,actinoid,Sólido
+97,Bk,Berkelio,11,7,247,actinoid,Sólido
+98,Cf,Californio,12,7,251,actinoid,Sólido
+99,Es,Einstenio,13,7,252,actinoid,Sólido
+100,Fm,Fermio,14,7,257,actinoid,Sólido
+101,Md,Mendelevio,15,7,258,actinoid,Sólido
+102,No,Nobelio,16,7,259,actinoid,Sólido
+103,Lr,Lawrencio,17,7,266,actinoid,Sólido
+104,Rf,Rutherfordio,4,7,267,transition,Sólido
+105,Db,Dubnio,5,7,268,transition,Sólido
+106,Sg,Seaborgio,6,7,269,transition,Sólido
+107,Bh,Bohrio,7,7,270,transition,Sólido
+108,Hs,Hassio,8,7,277,transition,Sólido
+109,Mt,Meitnerio,9,7,278,unknown,Sólido
+110,Ds,Darmstadtio,10,7,281,unknown,Sólido
+111,Rg,Roentgenio,11,7,282,unknown,Sólido
+112,Cn,Copernicio,12,7,285,transition,Sólido
+113,Nh,Nihonio,13,7,286,unknown,Sólido
+114,Fl,Flerovio,14,7,289,unknown,Sólido
+115,Mc,Moscovio,15,7,290,unknown,Sólido
+116,Lv,Livermorio,16,7,293,unknown,Sólido
+117,Ts,Teneso,17,7,294,halogen,Sólido
+118,Og,Oganesón,18,7,294,noble,Gas`;
+
+    const elements = raw.trim().split("\n").map(line => {
+      const [number, symbol, name, group, period, mass, category, state] = line.split(",");
+      return {
+        number: Number(number),
+        symbol,
+        name,
+        group: Number(group),
+        period: Number(period),
+        mass,
+        category,
+        state,
+        use: uses[symbol] || `Elemento de la familia ${categories[category].toLowerCase()}; se estudia por sus propiedades periódicas y su posición en la tabla.`
+      };
+    });
+
+    const standard = elements.filter(e => !["lanthanoid", "actinoid"].includes(e.category) || e.number === 57 || e.number === 89);
+    const lanthanoids = elements.filter(e => e.category === "lanthanoid");
+    const actinoids = elements.filter(e => e.category === "actinoid");
+    let selected = elements[0];
+    let currentQuestion = null;
+    let correct = 0;
+    let attempts = 0;
+
+    const $ = selector => document.querySelector(selector);
+
+    function normalize(text) {
+      return String(text).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function makeElementButton(element, compactSeries = false) {
+      const button = document.createElement("button");
+      button.className = `element ${element.category}`;
+      button.type = "button";
+      button.dataset.symbol = element.symbol;
+      button.dataset.search = normalize(`${element.number} ${element.symbol} ${element.name} ${categories[element.category]} ${element.period}`);
+      if (!compactSeries) {
+        button.style.gridColumn = String(element.group);
+        button.style.gridRow = String(element.period);
+      }
+      button.innerHTML = `
+        <span class="num">${element.number}</span>
+        <span class="sym">${element.symbol}</span>
+        <span class="name">${element.name}</span>
+        <span class="mass">${element.mass}</span>
+      `;
+      button.addEventListener("click", () => selectElement(element.symbol, true));
+      return button;
+    }
+
+    function renderTables() {
+      const table = $("#periodicTable");
+      const lanTable = $("#lanthanoidTable");
+      const actTable = $("#actinoidTable");
+      standard.forEach(element => table.appendChild(makeElementButton(element)));
+      lanthanoids.forEach(element => lanTable.appendChild(makeElementButton(element, true)));
+      actinoids.forEach(element => actTable.appendChild(makeElementButton(element, true)));
+    }
+
+    function renderLegend() {
+      const legend = $("#legend");
+      Object.entries(categories).forEach(([key, label]) => {
+        const item = document.createElement("button");
+        item.className = "chip";
+        item.type = "button";
+        item.innerHTML = `<span class="swatch ${key}"></span>${label}`;
+        item.addEventListener("click", () => {
+          $("#categoryFilter").value = key;
+          applyFilters();
+        });
+        legend.appendChild(item);
+      });
+    }
+
+    function selectElement(symbol, shouldSpeak = false) {
+      const element = elements.find(item => item.symbol === symbol) || elements[0];
+      selected = element;
+      document.querySelectorAll(".element").forEach(node => node.classList.toggle("selected", node.dataset.symbol === symbol));
+      $("#quickSymbol").textContent = element.symbol;
+      $("#quickSymbol").className = `mini-symbol ${element.category}`;
+      $("#quickText").textContent = `${element.name}: número ${element.number}, grupo ${element.group}, periodo ${element.period}.`;
+      $("#detailTile").textContent = element.symbol;
+      $("#detailTile").className = `big-tile ${element.category}`;
+      $("#detailName").textContent = element.name;
+      $("#detailSummary").textContent = `Número atómico ${element.number}. ${categories[element.category]} del periodo ${element.period} y grupo ${element.group}.`;
+      $("#detailNumber").textContent = element.number;
+      $("#detailMass").textContent = element.mass;
+      $("#detailGroup").textContent = element.group;
+      $("#detailPeriod").textContent = element.period;
+      $("#detailCategory").textContent = categories[element.category];
+      $("#detailState").textContent = element.state;
+      $("#detailUse").textContent = element.use;
+      if (shouldSpeak) speakElement(element);
+    }
+
+    function populateFilters() {
+      const select = $("#categoryFilter");
+      Object.entries(categories).forEach(([key, label]) => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = label;
+        select.appendChild(option);
+      });
+    }
+
+    function applyFilters() {
+      const term = normalize($("#search").value.trim());
+      const category = $("#categoryFilter").value;
+      const period = $("#periodFilter").value;
+      document.querySelectorAll(".element").forEach(node => {
+        const element = elements.find(item => item.symbol === node.dataset.symbol);
+        const matchesText = !term || node.dataset.search.includes(term);
+        const matchesCategory = category === "all" || element.category === category;
+        const matchesPeriod = period === "all" || String(element.period) === period;
+        node.classList.toggle("dimmed", !(matchesText && matchesCategory && matchesPeriod));
+      });
+    }
+
+    function speak(text) {
+      if (!("speechSynthesis" in window)) {
+        $("#feedback").textContent = "Este navegador no tiene lectura por voz disponible.";
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "es-ES";
+      utterance.rate = .92;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speakElement(element) {
+      speak(`${element.name}. Símbolo ${element.symbol}. Número atómico ${element.number}. Masa atómica ${element.mass}. Pertenece a ${categories[element.category]}. Está en el grupo ${element.group} y periodo ${element.period}. ${element.use}`);
+    }
+
+    function shuffle(list) {
+      return [...list].sort(() => Math.random() - .5);
+    }
+
+    function pickElement() {
+      return elements[Math.floor(Math.random() * elements.length)];
+    }
+
+    function massNumber(element) {
+      const numericMass = Number(String(element.mass).replace(/[^\d.]/g, ""));
+      return Math.round(numericMass);
+    }
+
+    function neutronCount(element) {
+      return massNumber(element) - element.number;
+    }
+
+    function numberOptions(answer, minimum = 0) {
+      const values = new Set([String(answer)]);
+      const offsets = shuffle([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 8]);
+      offsets.forEach(offset => {
+        if (values.size < 4) {
+          const candidate = Number(answer) + offset;
+          if (candidate >= minimum) values.add(String(candidate));
+        }
+      });
+      return shuffle([...values]).slice(0, 4);
+    }
+
+    function makeQuestion() {
+      const element = pickElement();
+      const type = Math.floor(Math.random() * 4);
+      let prompt = "";
+      let answer = "";
+      let options = [];
+      let explanation = "";
+      let success = "";
+
+      if (type === 0) {
+        answer = String(neutronCount(element));
+        prompt = `Calcule el número de neutrones de ${element.name}.`;
+        options = numberOptions(answer, 0);
+        explanation = `Para calcular neutrones se usa: masa atómica redondeada menos número atómico. En ${element.name}, la masa aproximada es ${massNumber(element)} y el número atómico es ${element.number}; entonces ${massNumber(element)} - ${element.number} = ${answer} neutrones.`;
+        success = `Correcto. ${element.name} tiene aproximadamente ${answer} neutrones porque ${massNumber(element)} menos ${element.number} es ${answer}.`;
+      } else if (type === 1) {
+        answer = String(element.number);
+        prompt = `¿Cuál es la cantidad de electrones de ${element.name} (${element.symbol}) en un átomo neutro?`;
+        options = numberOptions(answer, 1);
+        explanation = `En un átomo neutro, la cantidad de electrones es igual al número de protones, y ese valor es el número atómico. ${element.name} tiene número atómico ${element.number}; por eso tiene ${answer} electrones.`;
+        success = `Correcto. En un átomo neutro de ${element.name}, electrones y protones son iguales: ${answer}.`;
+      } else if (type === 2) {
+        answer = String(element.period);
+        prompt = `¿En qué periodo se encuentra ${element.name} (${element.symbol})?`;
+        options = shuffle([answer, ...shuffle(["1", "2", "3", "4", "5", "6", "7"].filter(p => p !== answer)).slice(0, 3)]);
+        explanation = `El periodo se lee en la fila horizontal de la tabla periódica. ${element.name} está en la fila ${element.period}; por eso pertenece al periodo ${answer}.`;
+        success = `Correcto. ${element.name} está en el periodo ${answer}.`;
+      } else {
+        answer = String(element.number);
+        prompt = `¿Cuál es el número atómico de ${element.name} (${element.symbol})?`;
+        options = numberOptions(answer, 1);
+        explanation = `El número atómico se lee en la parte superior de la casilla del elemento. Para ${element.name}, ese número es ${element.number}. También indica la cantidad de protones del átomo.`;
+        success = `Correcto. El número atómico de ${element.name} es ${answer}.`;
+      }
+
+      currentQuestion = { prompt, answer, element, explanation, success };
+      $("#question").textContent = prompt;
+      $("#feedback").textContent = "Selecciona una respuesta. Puedes pedir que se lea el ítem.";
+      const answers = $("#answers");
+      answers.innerHTML = "";
+      options.forEach(option => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.type = "button";
+        button.textContent = option;
+        button.addEventListener("click", () => checkAnswer(option, button));
+        answers.appendChild(button);
+      });
+    }
+
+    function checkAnswer(value, button) {
+      if (!currentQuestion) return;
+      const isCorrect = normalize(value) === normalize(currentQuestion.answer);
+      attempts += 1;
+      if (isCorrect) correct += 1;
+      $("#attemptCount").textContent = attempts;
+      $("#correctCount").textContent = correct;
+      document.querySelectorAll(".answer").forEach(node => {
+        node.disabled = true;
+        if (normalize(node.textContent) === normalize(currentQuestion.answer)) node.classList.add("correct");
+      });
+      if (!isCorrect) button.classList.add("wrong");
+      const message = isCorrect
+        ? currentQuestion.success
+        : `La respuesta correcta es ${currentQuestion.answer}. ${currentQuestion.explanation}`;
+      $("#feedback").textContent = message;
+      selectElement(currentQuestion.element.symbol, false);
+      speak(message);
+    }
+
+    function voiceAnswer() {
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!Recognition) {
+        $("#feedback").textContent = "El reconocimiento de voz no está disponible en este navegador. La lectura por voz sí puede funcionar.";
+        return;
+      }
+      if (!currentQuestion) makeQuestion();
+      const recognition = new Recognition();
+      recognition.lang = "es-ES";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      $("#feedback").textContent = "Escuchando respuesta...";
+      recognition.onresult = event => {
+        const heard = event.results[0][0].transcript;
+        const match = normalize(heard).includes(normalize(currentQuestion.answer));
+        const fakeButton = document.createElement("button");
+        fakeButton.className = "answer";
+        fakeButton.textContent = heard;
+        if (match) {
+          checkAnswer(currentQuestion.answer, fakeButton);
+        } else {
+          attempts += 1;
+          $("#attemptCount").textContent = attempts;
+          const message = `Escuché: "${heard}". La respuesta correcta es ${currentQuestion.answer}. ${currentQuestion.explanation}`;
+          $("#feedback").textContent = message;
+          speak(message);
+        }
+      };
+      recognition.onerror = () => {
+        $("#feedback").textContent = "No pude reconocer la respuesta. Intenta de nuevo o selecciona una opción.";
+      };
+      recognition.start();
+    }
+
+    renderLegend();
+    renderTables();
+    populateFilters();
+    selectElement("H");
+    makeQuestion();
+
+    $("#search").addEventListener("input", applyFilters);
+    $("#categoryFilter").addEventListener("change", applyFilters);
+    $("#periodFilter").addEventListener("change", applyFilters);
+    $("#clearFilters").addEventListener("click", () => {
+      $("#search").value = "";
+      $("#categoryFilter").value = "all";
+      $("#periodFilter").value = "all";
+      applyFilters();
+    });
+    $("#randomElement").addEventListener("click", () => selectElement(pickElement().symbol, true));
+    $("#speakSelected").addEventListener("click", () => speakElement(selected));
+    $("#speakIntro").addEventListener("click", () => speak("Usa la búsqueda para localizar elementos por nombre, símbolo o número atómico. Toca una casilla para ver la ficha. En ejercicios, responde y compara grupo, periodo, familia y masa atómica."));
+    $("#startExercise").addEventListener("click", makeQuestion);
+    $("#nextQuestion").addEventListener("click", makeQuestion);
+    $("#speakQuestion").addEventListener("click", () => currentQuestion && speak(currentQuestion.prompt));
+    $("#voiceAnswer").addEventListener("click", voiceAnswer);
+  </script>
+</body>
+</html>
