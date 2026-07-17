@@ -62,10 +62,6 @@
     }
 
     header {
-      display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr);
-      gap: 18px;
-      align-items: stretch;
       margin-bottom: 16px;
     }
 
@@ -323,7 +319,7 @@
       position: absolute;
       right: 5px;
       top: 4px;
-      font-size: .68rem;
+      font-size: .8rem;
       font-weight: 700;
       color: rgba(32, 35, 31, .72);
     }
@@ -343,14 +339,14 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: .66rem;
+      font-size: .75rem;
       text-align: center;
     }
 
     .mass {
       display: block;
       margin-top: 2px;
-      font-size: .56rem;
+      font-size: .66rem;
       color: rgba(32, 35, 31, .62);
       text-align: center;
       font-variant-numeric: tabular-nums;
@@ -376,14 +372,49 @@
     }
 
     .big-tile {
-      display: grid;
-      place-items: center;
       width: 96px;
       aspect-ratio: 1;
       border-radius: 8px;
       border: 1px solid rgba(32, 35, 31, .18);
-      font-size: 2.7rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 8px 4px 4px;
+      gap: 1px;
+    }
+
+    .big-tile-num {
+      position: absolute;
+      top: 5px;
+      right: 7px;
+      font-size: .95rem;
+      font-weight: 700;
+      color: rgba(32,35,31,.72);
+    }
+
+    .big-tile-sym {
+      font-size: 2.4rem;
       font-weight: 900;
+      line-height: 1;
+      margin-top: 4px;
+    }
+
+    .big-tile-name {
+      font-size: .78rem;
+      font-weight: 600;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      padding: 0 4px;
+    }
+
+    .big-tile-mass {
+      font-size: .76rem;
+      color: rgba(32,35,31,.6);
     }
 
     .element-title h3 {
@@ -404,24 +435,77 @@
       margin: 12px 0;
     }
 
-    .fact {
-      border-top: 1px solid var(--line);
-      padding-top: 8px;
+    .fact-btn {
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 12px;
+      background: var(--panel);
+      text-align: left;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, box-shadow .15s;
+      width: 100%;
     }
 
-    .fact span {
+    .fact-btn:hover {
+      background: rgba(40,120,111,.08);
+      border-color: var(--accent);
+    }
+
+    .fact-btn span {
       display: block;
       color: var(--muted);
-      font-size: .76rem;
-      font-weight: 750;
+      font-size: .72rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .04em;
+      margin-bottom: 2px;
     }
 
-    .fact strong {
+    .fact-btn strong {
       display: block;
-      margin-top: 3px;
       font-size: 1rem;
+    }
+
+    .fact-btn.playing {
+      background: rgba(40,120,111,.13);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(40,120,111,.18);
+    }
+
+    /* ── Stop-audio button ──────────────────────────────── */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 0;
+    }
+
+    .btn-stop-audio {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1.5px solid #d39780;
+      background: #fff6f2;
+      color: #b03c1e;
+      font-size: .75rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s, color .15s, opacity .15s;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .btn-stop-audio.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .btn-stop-audio:hover {
+      background: #f8ddd4;
     }
 
     .use {
@@ -595,7 +679,10 @@
 
       .big-tile {
         width: 76px;
-        font-size: 2.15rem;
+      }
+
+      .big-tile-sym {
+        font-size: 2rem;
       }
 
       .periodic-table, .series-table {
@@ -605,6 +692,384 @@
       .element {
         min-height: 66px;
       }
+    }
+
+    /* ── Practice overlay ───────────────────────────────── */
+    .practice-overlay {
+      display: none;
+    }
+
+    .practice-overlay.open {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: var(--bg);
+      display: grid;
+      grid-template-rows: 52px 1fr;
+      overflow: hidden;
+    }
+
+    .pov-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      background: rgba(255,253,248,.97);
+      border-bottom: 1px solid var(--line);
+      gap: 14px;
+      box-shadow: 0 2px 8px rgba(79,70,53,.06);
+    }
+
+    .pov-title {
+      font-weight: 750;
+      font-size: .95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pov-score { color: var(--muted); font-size: .88rem; white-space: nowrap; flex-shrink: 0; }
+    .pov-score strong { color: var(--accent-dark); }
+
+    /* ── Support videos tab ─────────────────────────────── */
+    .videos-overlay {
+      display: none;
+    }
+
+    .videos-overlay.open {
+      position: fixed;
+      inset: 0;
+      z-index: 280;
+      display: grid;
+      grid-template-rows: 58px 1fr;
+      background:
+        linear-gradient(115deg, rgba(40,120,111,.11), transparent 36%),
+        linear-gradient(270deg, rgba(197,107,59,.11), transparent 32%),
+        var(--bg);
+      overflow: hidden;
+    }
+
+    .videos-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 0 18px;
+      background: rgba(255,253,248,.97);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 8px rgba(79,70,53,.06);
+    }
+
+    .videos-title {
+      font-weight: 800;
+      font-size: .98rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .videos-body {
+      overflow-y: auto;
+      padding: clamp(18px, 3vw, 34px);
+    }
+
+    .videos-panel {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      background: rgba(255,253,248,.92);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 18px 45px rgba(79, 70, 53, .08);
+      padding: clamp(18px, 2.5vw, 30px);
+    }
+
+    .videos-panel h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.55rem, 2.8vw, 2.55rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .videos-panel > p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 70ch;
+    }
+
+    .video-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .video-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffbf1;
+      color: var(--ink);
+      text-decoration: none;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+
+    .video-card:hover {
+      background: #f5f0e2;
+      border-color: #b0a898;
+      transform: translateY(-1px);
+    }
+
+    .video-card strong {
+      font-size: 1.02rem;
+      line-height: 1.32;
+    }
+
+    .video-card span {
+      color: var(--muted);
+      font-size: .86rem;
+      overflow-wrap: anywhere;
+    }
+
+    .video-card em {
+      justify-self: end;
+      color: var(--accent-dark);
+      font-style: normal;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pov-body {
+      display: block;
+      overflow: hidden;
+      padding: clamp(14px, 2.2vw, 28px);
+    }
+
+    .sel {
+      min-height: 50px;
+      border: 1px solid rgba(32,35,31,.2);
+      border-radius: 5px;
+      padding: 3px 2px 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      position: relative;
+    }
+
+    .sel .sn {
+      position: absolute;
+      top: 2px; right: 3px;
+      font-size: .52rem;
+      font-weight: 700;
+      color: rgba(32,35,31,.65);
+    }
+
+    .sel .ss {
+      font-size: clamp(.82rem, .9vw, 1.15rem);
+      font-weight: 900;
+      line-height: 1;
+      margin-top: 10px;
+    }
+
+    .sel .sna {
+      font-size: .46rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      text-align: center;
+      color: rgba(32,35,31,.68);
+      margin-top: 1px;
+    }
+
+    /* ── Item panel ─────────────────────────────────────── */
+    .pov-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+      width: min(1120px, 100%);
+      height: 100%;
+      margin: 0 auto;
+      padding: clamp(18px, 2.4vw, 30px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,253,248,.92);
+      min-height: 0;
+      box-shadow: 0 18px 45px rgba(79, 70, 53, .08);
+    }
+
+    .pov-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .pov-item-badge {
+      font-size: .78rem;
+      font-weight: 800;
+      color: white;
+      background: var(--accent-dark);
+      padding: 3px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      flex-shrink: 0;
+    }
+
+    .pov-nav { display: flex; align-items: center; gap: 6px; }
+    .pov-nav .btn { min-height: 34px; padding: 6px 10px; font-size: .82rem; }
+    .pov-nav-counter { font-size: .82rem; color: var(--muted); white-space: nowrap; }
+
+    .pov-context {
+      padding: 14px 16px;
+      background: rgba(40,120,111,.07);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      font-size: .98rem;
+      line-height: 1.62;
+      white-space: pre-line;
+    }
+
+    .pov-question { margin: 0; font-size: 1.16rem; font-weight: 760; line-height: 1.44; }
+
+    .pov-options { display: grid; gap: 10px; }
+
+    .p-opt {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 7px;
+      border: 1.5px solid var(--line);
+      background: #fffbf1;
+      color: var(--ink);
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 680;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background .14s, border-color .14s;
+    }
+
+    .p-opt:hover:not(:disabled) { background: #f5f0e2; border-color: #b0a898; }
+
+    .p-mark { flex-shrink: 0; width: 20px; font-size: 1.05rem; line-height: 1.3; text-align: center; }
+    .p-text { flex: 1; }
+
+    .p-opt.p-correct { background: #dcefe7; border-color: #6baa90; }
+    .p-opt.p-correct .p-mark { color: #236b4e; font-weight: 900; }
+    .p-opt.p-wrong   { background: #f8ddd4; border-color: #d39780; }
+    .p-opt.p-wrong   .p-mark { color: #b03c1e; font-weight: 900; }
+
+    .pov-explanation {
+      padding: 14px 16px;
+      background: rgba(40,120,111,.07);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      font-size: .96rem;
+      line-height: 1.62;
+    }
+
+    .pov-explanation p { margin: 0 0 5px; }
+    .pov-explanation p:last-child { margin-bottom: 0; }
+
+    /* ── Mini-table fragment (embedded inside item 16) ──── */
+    .mini-frag {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 12px;
+      background: rgba(255,253,248,.7);
+      overflow-x: auto;
+    }
+
+    .mini-frag-label {
+      margin: 0 0 8px;
+      font-size: .84rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .mini-frag-grid {
+      min-width: 820px;
+      display: grid;
+      grid-template-columns: repeat(18, minmax(40px, 1fr));
+      gap: 3px;
+    }
+
+    .mini-sub-label {
+      font-size: .76rem;
+      font-weight: 700;
+      color: var(--accent-dark);
+      text-align: center;
+      background: rgba(40,120,111,.12);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 0;
+    }
+
+    .mini-frag-grid .sel { min-height: 62px; }
+    .mini-frag-grid .sel .ss  { font-size: 1.12rem; }
+    .mini-frag-grid .sel .sna { font-size: .56rem; }
+    .mini-frag-grid .sel .sn  { font-size: .56rem; }
+
+    /* ── Mini fragment item 17 ────────────────────────── */
+    .mini17-tbl { width: 100%; border-collapse: collapse; font-size: .92rem; margin-bottom: 12px; }
+    .mini17-tbl th, .mini17-tbl td { border: 1px solid var(--line); padding: 8px 10px; text-align: center; vertical-align: top; }
+    .mini17-tbl th { background: rgba(40,120,111,.12); font-weight: 700; }
+    .mini17-outer { display: flex; align-items: stretch; gap: 8px; }
+    .mini17-pt-wrap { flex: 1; overflow-x: auto; }
+    .mini17-grid {
+      display: grid;
+      grid-template-columns: repeat(18, minmax(38px, 1fr));
+      grid-template-rows: repeat(5, 42px);
+      gap: 3px;
+      min-width: 760px;
+    }
+    .m17e {
+      border: 1px solid #aaa;
+      border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      font-weight: 700;
+      background: #f0ebe0;
+      line-height: 1;
+    }
+    .m17n { font-size: .56rem; font-weight: 400; color: #666; }
+    .mini17-arrow-h { font-size: .78rem; padding-top: 6px; text-align: right; font-weight: 600; }
+    .mini17-arrow-v {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: .78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2px;
+      text-align: center;
+    }
+
+    @media (max-width: 960px) {
+      .pov-body { padding: 10px; }
+      .pov-panel { padding: 14px; }
+      .mini-frag-grid { min-width: 760px; }
+      .mini17-grid { min-width: 700px; }
+      .video-card { grid-template-columns: 1fr; }
+      .video-card em { justify-self: start; }
     }
   </style>
 </head>
@@ -619,6 +1084,7 @@
             <button class="btn" id="startExercise" type="button">Iniciar práctica</button>
             <button class="btn secondary" id="speakIntro" type="button">Escuchar guía</button>
             <button class="btn ghost" id="randomElement" type="button">Elemento al azar</button>
+            <button class="btn ghost" id="openVideos" type="button">Vídeos de Apoyo</button>
           </div>
         </div>
         <div class="hero-stat" aria-label="Resumen del instrumento">
@@ -627,14 +1093,6 @@
         </div>
       </section>
 
-      <aside class="quick-card" aria-labelledby="quickTitle">
-        <h2 id="quickTitle">Lectura rápida</h2>
-        <div class="quick-metric">
-          <span class="mini-symbol" id="quickSymbol">H</span>
-          <p id="quickText">Toca cualquier elemento para ver masa atómica, categoría, ubicación y uso frecuente.</p>
-        </div>
-        <button class="btn secondary" id="speakSelected" type="button">Leer elemento seleccionado</button>
-      </aside>
     </header>
 
     <section class="toolbar" aria-label="Herramientas de búsqueda y filtro">
@@ -679,21 +1137,43 @@
 
       <aside class="side">
         <section class="panel" aria-labelledby="infoTitle">
-          <h2 id="infoTitle">Ficha del elemento</h2>
+          <div class="panel-header">
+            <h2 id="infoTitle">Ficha del elemento</h2>
+            <button class="btn-stop-audio" id="stopAudio" type="button" aria-label="Detener audio">
+              ⏹ Detener audio
+            </button>
+          </div>
           <div class="element-card">
-            <div class="big-tile nonmetal" id="detailTile">H</div>
+            <div class="big-tile nonmetal" id="detailTile">
+              <span class="big-tile-num" id="detailTileNum">1</span>
+              <span class="big-tile-sym" id="detailTileSym">H</span>
+              <span class="big-tile-name" id="detailTileName">Hidrógeno</span>
+              <span class="big-tile-mass" id="detailTileMass">1.008</span>
+            </div>
             <div class="element-title">
               <h3 id="detailName">Hidrógeno</h3>
               <p id="detailSummary">Número atómico 1. No metal del periodo 1 y grupo 1.</p>
             </div>
           </div>
           <div class="facts">
-            <div class="fact"><span>Número atómico</span><strong id="detailNumber">1</strong></div>
-            <div class="fact"><span>Masa atómica</span><strong id="detailMass">1.008</strong></div>
-            <div class="fact"><span>Grupo</span><strong id="detailGroup">1</strong></div>
-            <div class="fact"><span>Periodo</span><strong id="detailPeriod">1</strong></div>
-            <div class="fact"><span>Familia</span><strong id="detailCategory">Otros no metales</strong></div>
-            <div class="fact"><span>Estado usual</span><strong id="detailState">Gas</strong></div>
+            <button class="fact-btn" data-fact="number" type="button">
+              <span>Número atómico</span><strong id="detailNumber">1</strong>
+            </button>
+            <button class="fact-btn" data-fact="mass" type="button">
+              <span>Masa atómica</span><strong id="detailMass">1.008</strong>
+            </button>
+            <button class="fact-btn" data-fact="group" type="button">
+              <span>Grupo</span><strong id="detailGroup">1</strong>
+            </button>
+            <button class="fact-btn" data-fact="period" type="button">
+              <span>Periodo</span><strong id="detailPeriod">1</strong>
+            </button>
+            <button class="fact-btn" data-fact="family" type="button">
+              <span>Familia</span><strong id="detailCategory">Otros no metales</strong>
+            </button>
+            <button class="fact-btn" data-fact="state" type="button">
+              <span>Estado usual</span><strong id="detailState">Gas</strong>
+            </button>
           </div>
           <p class="use" id="detailUse">Se usa en combustibles, síntesis de amoníaco y celdas de combustible.</p>
         </section>
@@ -731,6 +1211,72 @@
       <span><strong>Elaborado por:</strong>&nbsp;Alberto Jiménez Ruiz</span>
       <span>Asesor de Matemática, DRE-Cartago, 2026</span>
     </footer>
+  </div>
+
+  <!-- ══ Support videos tab ═══════════════════════════════════════ -->
+  <div id="videosOverlay" class="videos-overlay" role="dialog" aria-modal="true" aria-labelledby="videosTitle">
+    <div class="videos-header">
+      <button class="btn secondary" id="closeVideos" type="button">← Regresar al principio</button>
+      <span class="videos-title">Vídeos de Apoyo</span>
+    </div>
+    <div class="videos-body">
+      <section class="videos-panel" aria-labelledby="videosTitle">
+        <h2 id="videosTitle">Vídeos de Apoyo</h2>
+        <p>Materiales para repasar organización, clasificación, familias, desarrollo histórico y números de oxidación de la tabla periódica.</p>
+        <div class="video-list">
+          <a class="video-card" href="https://youtu.be/XO13dOI9Ds8" target="_blank" rel="noopener noreferrer">
+            <span><strong>TABLA PERIÓDICA. CLASIFICACIÓN DE LOS ELEMENTOS</strong><br>https://youtu.be/XO13dOI9Ds8</span>
+            <em>Abrir video</em>
+          </a>
+          <a class="video-card" href="https://youtu.be/bQwiegsjb9k" target="_blank" rel="noopener noreferrer">
+            <span><strong>Metales, No Metales y Metaloides de la tabla periódica</strong><br>https://youtu.be/bQwiegsjb9k</span>
+            <em>Abrir video</em>
+          </a>
+          <a class="video-card" href="https://youtu.be/60go-4haeXw" target="_blank" rel="noopener noreferrer">
+            <span><strong>¿Qué NECESITO saber sobre la tabla periódica?</strong><br>https://youtu.be/60go-4haeXw</span>
+            <em>Abrir video</em>
+          </a>
+          <a class="video-card" href="https://youtu.be/k15RtVohM4I" target="_blank" rel="noopener noreferrer">
+            <span><strong>¿CÓMO se desarrolló la tabla periódica?</strong><br>https://youtu.be/k15RtVohM4I</span>
+            <em>Abrir video</em>
+          </a>
+          <a class="video-card" href="https://youtu.be/qrb0apkL-iE" target="_blank" rel="noopener noreferrer">
+            <span><strong>TABLA PERIÓDICA | Organización y Clasificación de los ELEMENTOS</strong><br>https://youtu.be/qrb0apkL-iE</span>
+            <em>Abrir video</em>
+          </a>
+          <a class="video-card" href="https://youtu.be/sdwUIRpcTSQ" target="_blank" rel="noopener noreferrer">
+            <span><strong>Como APRENDERSE los NÚMEROS de OXIDACIÓN de la TABLA PERIÓDICA</strong><br>https://youtu.be/sdwUIRpcTSQ</span>
+            <em>Abrir video</em>
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ══ Practice overlay ════════════════════════════════════════ -->
+  <div id="practiceOverlay" class="practice-overlay" role="dialog" aria-modal="true" aria-labelledby="povTitle">
+    <div class="pov-header">
+      <button class="btn secondary" id="closePractice" type="button">← Volver</button>
+      <span class="pov-title" id="povTitle">Práctica — Ítems de tabla periódica y química</span>
+      <span class="pov-score">Aciertos:&nbsp;<strong id="pCorrectSpan">0</strong>&nbsp;/&nbsp;<strong id="pAttemptsSpan">0</strong></span>
+    </div>
+    <div class="pov-body">
+      <div class="pov-panel" aria-label="Ítem de práctica">
+        <div class="pov-item-head">
+          <span class="pov-item-badge" id="pItemBadge">Ítem 1</span>
+          <div class="pov-nav">
+            <button class="btn ghost" id="pPrev" type="button">‹ Ant.</button>
+            <span class="pov-nav-counter" id="pCounter">1 / 7</span>
+            <button class="btn ghost" id="pNext" type="button">Sig. ›</button>
+          </div>
+        </div>
+        <div id="pMiniTable" hidden></div>
+        <div class="pov-context" id="pContext" hidden></div>
+        <p class="pov-question" id="pQuestion"></p>
+        <div class="pov-options" id="pOptions" aria-label="Opciones de respuesta"></div>
+        <div class="pov-explanation" id="pExplanation" hidden aria-live="polite"></div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -973,11 +1519,11 @@
       const element = elements.find(item => item.symbol === symbol) || elements[0];
       selected = element;
       document.querySelectorAll(".element").forEach(node => node.classList.toggle("selected", node.dataset.symbol === symbol));
-      $("#quickSymbol").textContent = element.symbol;
-      $("#quickSymbol").className = `mini-symbol ${element.category}`;
-      $("#quickText").textContent = `${element.name}: número ${element.number}, grupo ${element.group}, periodo ${element.period}.`;
-      $("#detailTile").textContent = element.symbol;
       $("#detailTile").className = `big-tile ${element.category}`;
+      $("#detailTileNum").textContent = element.number;
+      $("#detailTileSym").textContent = element.symbol;
+      $("#detailTileName").textContent = element.name;
+      $("#detailTileMass").textContent = element.mass;
       $("#detailName").textContent = element.name;
       $("#detailSummary").textContent = `Número atómico ${element.number}. ${categories[element.category]} del periodo ${element.period} y grupo ${element.group}.`;
       $("#detailNumber").textContent = element.number;
@@ -1013,6 +1559,8 @@
       });
     }
 
+    const stopBtn = () => $("#stopAudio");
+
     function speak(text) {
       if (!("speechSynthesis" in window)) {
         $("#feedback").textContent = "Este navegador no tiene lectura por voz disponible.";
@@ -1022,11 +1570,39 @@
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "es-ES";
       utterance.rate = .92;
+      utterance.onstart = () => stopBtn().classList.add("active");
+      utterance.onend = () => stopBtn().classList.remove("active");
+      utterance.onerror = () => stopBtn().classList.remove("active");
       window.speechSynthesis.speak(utterance);
     }
 
     function speakElement(element) {
-      speak(`${element.name}. Símbolo ${element.symbol}. Número atómico ${element.number}. Masa atómica ${element.mass}. Pertenece a ${categories[element.category]}. Está en el grupo ${element.group} y periodo ${element.period}. ${element.use}`);
+      const massText = String(element.mass).replace(/[()[\]]/g, "").replace(".", " coma ");
+      speak(`${element.name}. Número atómico ${element.number}. Masa atómica ${massText}. Pertenece a ${categories[element.category]}. Está en el grupo ${element.group} y periodo ${element.period}. ${element.use}`);
+    }
+
+    function speakFact(btn, factType, el) {
+      const massText = String(el.mass).replace(/[()[\]]/g, "").replace(".", " coma ");
+      const texts = {
+        number: `El número atómico de ${el.name} es ${el.number}. Este número indica cuántos protones hay en el núcleo del átomo. En la tabla periódica, el número atómico se lee en la esquina superior de cada casilla. Cuanto mayor es el número atómico, mayor es la carga positiva del núcleo y más complejo es el átomo.`,
+        mass:   `La masa atómica de ${el.name} es ${massText} unidades de masa atómica. Este valor representa la masa promedio de todos sus isótopos naturales. En la tabla periódica se lee en la parte inferior de la casilla, debajo del nombre del elemento. No debe confundirse con el número atómico: la masa incluye protones y neutrones.`,
+        group:  `${el.name} está en el grupo ${el.group}. El grupo corresponde a la columna vertical de la tabla periódica, numerada del uno al dieciocho. Todos los elementos de un mismo grupo tienen la misma cantidad de electrones en su capa externa, lo que les da propiedades químicas similares.`,
+        period: `${el.name} pertenece al periodo ${el.period}. El periodo es la fila horizontal de la tabla periódica. Todos los elementos de un mismo periodo tienen sus electrones distribuidos en el mismo número de niveles de energía. Al avanzar por un periodo de izquierda a derecha, aumenta el número atómico y cambian las propiedades.`,
+        family: `${el.name} pertenece a la familia de ${categories[el.category]}. En la tabla periódica cada familia se identifica con un color diferente en la leyenda. Los miembros de una misma familia comparten propiedades físicas y químicas características porque tienen estructuras electrónicas externas similares.`,
+        state:  `${el.name} se encuentra en estado ${el.state} en condiciones normales, es decir, a veinticinco grados Celsius y una atmósfera de presión. La mayoría de los elementos de la tabla periódica son sólidos en esas condiciones. Solo once son gases y dos son líquidos: el mercurio y el bromo.`
+      };
+
+      document.querySelectorAll(".fact-btn").forEach(b => b.classList.remove("playing"));
+      btn.classList.add("playing");
+
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(texts[factType]);
+      utt.lang = "es-ES";
+      utt.rate = 0.92;
+      utt.onstart = () => stopBtn().classList.add("active");
+      utt.onend   = () => { stopBtn().classList.remove("active"); btn.classList.remove("playing"); };
+      utt.onerror = () => { stopBtn().classList.remove("active"); btn.classList.remove("playing"); };
+      window.speechSynthesis.speak(utt);
     }
 
     function shuffle(list) {
@@ -1075,19 +1651,19 @@
         success = `Correcto. ${element.name} tiene aproximadamente ${answer} neutrones porque ${massNumber(element)} menos ${element.number} es ${answer}.`;
       } else if (type === 1) {
         answer = String(element.number);
-        prompt = `¿Cuál es la cantidad de electrones de ${element.name} (${element.symbol}) en un átomo neutro?`;
+        prompt = `¿Cuál es la cantidad de electrones de ${element.name} en un átomo neutro?`;
         options = numberOptions(answer, 1);
         explanation = `En un átomo neutro, la cantidad de electrones es igual al número de protones, y ese valor es el número atómico. ${element.name} tiene número atómico ${element.number}; por eso tiene ${answer} electrones.`;
         success = `Correcto. En un átomo neutro de ${element.name}, electrones y protones son iguales: ${answer}.`;
       } else if (type === 2) {
         answer = String(element.period);
-        prompt = `¿En qué periodo se encuentra ${element.name} (${element.symbol})?`;
+        prompt = `¿En qué periodo se encuentra ${element.name}?`;
         options = shuffle([answer, ...shuffle(["1", "2", "3", "4", "5", "6", "7"].filter(p => p !== answer)).slice(0, 3)]);
         explanation = `El periodo se lee en la fila horizontal de la tabla periódica. ${element.name} está en la fila ${element.period}; por eso pertenece al periodo ${answer}.`;
         success = `Correcto. ${element.name} está en el periodo ${answer}.`;
       } else {
         answer = String(element.number);
-        prompt = `¿Cuál es el número atómico de ${element.name} (${element.symbol})?`;
+        prompt = `¿Cuál es el número atómico de ${element.name}?`;
         options = numberOptions(answer, 1);
         explanation = `El número atómico se lee en la parte superior de la casilla del elemento. Para ${element.name}, ese número es ${element.number}. También indica la cantidad de protones del átomo.`;
         success = `Correcto. El número atómico de ${element.name} es ${answer}.`;
@@ -1162,6 +1738,576 @@
       recognition.start();
     }
 
+    /* ══ Ítem 16: porción de tabla periódica (períodos 3–4) ═══ */
+    const MINI16 = `<div class="mini-frag">
+      <p class="mini-frag-label">Porción de la tabla periódica</p>
+      <div class="mini-frag-grid">
+        <div class="mini-sub-label" style="grid-column:1/3;grid-row:1">3s / 4s</div>
+        <div class="mini-sub-label" style="grid-column:3/13;grid-row:1">3d</div>
+        <div class="mini-sub-label" style="grid-column:13/19;grid-row:1">3p / 4p</div>
+        <div class="sel alkaline" style="grid-column:1;grid-row:2"><span class="sn">11</span><span class="ss">Na</span><span class="sna">Sodio</span></div>
+        <div class="sel alkaline" style="grid-column:2;grid-row:2"><span class="sn">12</span><span class="ss">Mg</span><span class="sna">Magnesio</span></div>
+        <div class="sel post" style="grid-column:13;grid-row:2"><span class="sn">13</span><span class="ss">Al</span><span class="sna">Aluminio</span></div>
+        <div class="sel metalloid" style="grid-column:14;grid-row:2"><span class="sn">14</span><span class="ss">Si</span><span class="sna">Silicio</span></div>
+        <div class="sel nonmetal" style="grid-column:15;grid-row:2"><span class="sn">15</span><span class="ss">P</span><span class="sna">Fósforo</span></div>
+        <div class="sel nonmetal" style="grid-column:16;grid-row:2"><span class="sn">16</span><span class="ss">S</span><span class="sna">Azufre</span></div>
+        <div class="sel halogen" style="grid-column:17;grid-row:2"><span class="sn">17</span><span class="ss">Cl</span><span class="sna">Cloro</span></div>
+        <div class="sel noble" style="grid-column:18;grid-row:2"><span class="sn">18</span><span class="ss">Ar</span><span class="sna">Argón</span></div>
+        <div class="sel alkali" style="grid-column:1;grid-row:3"><span class="sn">19</span><span class="ss">K</span><span class="sna">Potasio</span></div>
+        <div class="sel alkaline" style="grid-column:2;grid-row:3"><span class="sn">20</span><span class="ss">Ca</span><span class="sna">Calcio</span></div>
+        <div class="sel transition" style="grid-column:3;grid-row:3"><span class="sn">21</span><span class="ss">Sc</span><span class="sna">Escandio</span></div>
+        <div class="sel transition" style="grid-column:4;grid-row:3"><span class="sn">22</span><span class="ss">Ti</span><span class="sna">Titanio</span></div>
+        <div class="sel transition" style="grid-column:5;grid-row:3"><span class="sn">23</span><span class="ss">V</span><span class="sna">Vanadio</span></div>
+        <div class="sel transition" style="grid-column:6;grid-row:3"><span class="sn">24</span><span class="ss">Cr</span><span class="sna">Cromo</span></div>
+        <div class="sel transition" style="grid-column:7;grid-row:3"><span class="sn">25</span><span class="ss">Mn</span><span class="sna">Manganeso</span></div>
+        <div class="sel transition" style="grid-column:8;grid-row:3"><span class="sn">26</span><span class="ss">Fe</span><span class="sna">Hierro</span></div>
+        <div class="sel transition" style="grid-column:9;grid-row:3"><span class="sn">27</span><span class="ss">Co</span><span class="sna">Cobalto</span></div>
+        <div class="sel transition" style="grid-column:10;grid-row:3"><span class="sn">28</span><span class="ss">Ni</span><span class="sna">Níquel</span></div>
+        <div class="sel transition" style="grid-column:11;grid-row:3"><span class="sn">29</span><span class="ss">Cu</span><span class="sna">Cobre</span></div>
+        <div class="sel transition" style="grid-column:12;grid-row:3"><span class="sn">30</span><span class="ss">Zn</span><span class="sna">Zinc</span></div>
+        <div class="sel post" style="grid-column:13;grid-row:3"><span class="sn">31</span><span class="ss">Ga</span><span class="sna">Galio</span></div>
+        <div class="sel metalloid" style="grid-column:14;grid-row:3"><span class="sn">32</span><span class="ss">Ge</span><span class="sna">Germanio</span></div>
+        <div class="sel metalloid" style="grid-column:15;grid-row:3"><span class="sn">33</span><span class="ss">As</span><span class="sna">Arsénico</span></div>
+        <div class="sel nonmetal" style="grid-column:16;grid-row:3"><span class="sn">34</span><span class="ss">Se</span><span class="sna">Selenio</span></div>
+        <div class="sel halogen" style="grid-column:17;grid-row:3"><span class="sn">35</span><span class="ss">Br</span><span class="sna">Bromo</span></div>
+        <div class="sel noble" style="grid-column:18;grid-row:3"><span class="sn">36</span><span class="ss">Kr</span><span class="sna">Kriptón</span></div>
+      </div></div>`;
+
+    /* ══ Ítem 17: tabla de datos + porción tabla periódica ════ */
+    const MINI17 = `<div class="mini-frag">
+      <p class="mini-frag-label">Dos sustancias estudiadas dieron los siguientes datos:</p>
+      <table class="mini17-tbl">
+        <thead><tr><th>CaO</th><th>P₂O₃</th><th>KI</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Punto fusión elevado</td>
+            <td>Punto de fusión bajo</td>
+            <td>Buen conductor en disolución</td>
+          </tr>
+          <tr>
+            <td>Presenta enlace iónico</td>
+            <td>Presenta enlace covalente</td>
+            <td>Presenta enlace iónico</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mini17-outer">
+        <div class="mini17-pt-wrap">
+          <div class="mini17-grid">
+            <div class="m17e" style="grid-column:1;grid-row:1"><span class="m17n">1</span>H</div>
+            <div class="m17e" style="grid-column:18;grid-row:1"><span class="m17n">2</span>He</div>
+            <div class="m17e" style="grid-column:1;grid-row:2"><span class="m17n">3</span>Li</div>
+            <div class="m17e" style="grid-column:2;grid-row:2"><span class="m17n">4</span>Be</div>
+            <div class="m17e" style="grid-column:13;grid-row:2"><span class="m17n">5</span>B</div>
+            <div class="m17e" style="grid-column:14;grid-row:2"><span class="m17n">6</span>C</div>
+            <div class="m17e" style="grid-column:15;grid-row:2"><span class="m17n">7</span>N</div>
+            <div class="m17e" style="grid-column:16;grid-row:2"><span class="m17n">8</span>O</div>
+            <div class="m17e" style="grid-column:17;grid-row:2"><span class="m17n">9</span>F</div>
+            <div class="m17e" style="grid-column:18;grid-row:2"><span class="m17n">10</span>Ne</div>
+            <div class="m17e" style="grid-column:1;grid-row:3"><span class="m17n">11</span>Na</div>
+            <div class="m17e" style="grid-column:2;grid-row:3"><span class="m17n">12</span>Mg</div>
+            <div class="m17e" style="grid-column:13;grid-row:3"><span class="m17n">13</span>Al</div>
+            <div class="m17e" style="grid-column:14;grid-row:3"><span class="m17n">14</span>Si</div>
+            <div class="m17e" style="grid-column:15;grid-row:3"><span class="m17n">15</span>P</div>
+            <div class="m17e" style="grid-column:16;grid-row:3"><span class="m17n">16</span>S</div>
+            <div class="m17e" style="grid-column:17;grid-row:3"><span class="m17n">17</span>Cl</div>
+            <div class="m17e" style="grid-column:18;grid-row:3"><span class="m17n">18</span>Ar</div>
+            <div class="m17e" style="grid-column:1;grid-row:4"><span class="m17n">19</span>K</div>
+            <div class="m17e" style="grid-column:2;grid-row:4"><span class="m17n">20</span>Ca</div>
+            <div class="m17e" style="grid-column:3;grid-row:4"><span class="m17n">21</span>Sc</div>
+            <div class="m17e" style="grid-column:4;grid-row:4"><span class="m17n">22</span>Ti</div>
+            <div class="m17e" style="grid-column:5;grid-row:4"><span class="m17n">23</span>V</div>
+            <div class="m17e" style="grid-column:6;grid-row:4"><span class="m17n">24</span>Cr</div>
+            <div class="m17e" style="grid-column:7;grid-row:4"><span class="m17n">25</span>Mn</div>
+            <div class="m17e" style="grid-column:8;grid-row:4"><span class="m17n">26</span>Fe</div>
+            <div class="m17e" style="grid-column:9;grid-row:4"><span class="m17n">27</span>Co</div>
+            <div class="m17e" style="grid-column:10;grid-row:4"><span class="m17n">28</span>Ni</div>
+            <div class="m17e" style="grid-column:11;grid-row:4"><span class="m17n">29</span>Cu</div>
+            <div class="m17e" style="grid-column:12;grid-row:4"><span class="m17n">30</span>Zn</div>
+            <div class="m17e" style="grid-column:13;grid-row:4"><span class="m17n">31</span>Ga</div>
+            <div class="m17e" style="grid-column:14;grid-row:4"><span class="m17n">32</span>Ge</div>
+            <div class="m17e" style="grid-column:15;grid-row:4"><span class="m17n">33</span>As</div>
+            <div class="m17e" style="grid-column:16;grid-row:4"><span class="m17n">34</span>Se</div>
+            <div class="m17e" style="grid-column:17;grid-row:4"><span class="m17n">35</span>Br</div>
+            <div class="m17e" style="grid-column:18;grid-row:4"><span class="m17n">36</span>Kr</div>
+            <div class="m17e" style="grid-column:1;grid-row:5"><span class="m17n">37</span>Rb</div>
+            <div class="m17e" style="grid-column:2;grid-row:5"><span class="m17n">38</span>Sr</div>
+            <div class="m17e" style="grid-column:3;grid-row:5"><span class="m17n">39</span>Y</div>
+            <div class="m17e" style="grid-column:4;grid-row:5"><span class="m17n">40</span>Zr</div>
+            <div class="m17e" style="grid-column:5;grid-row:5"><span class="m17n">41</span>Nb</div>
+            <div class="m17e" style="grid-column:6;grid-row:5"><span class="m17n">42</span>Mo</div>
+            <div class="m17e" style="grid-column:7;grid-row:5"><span class="m17n">43</span>Tc</div>
+            <div class="m17e" style="grid-column:8;grid-row:5"><span class="m17n">44</span>Ru</div>
+            <div class="m17e" style="grid-column:9;grid-row:5"><span class="m17n">45</span>Rh</div>
+            <div class="m17e" style="grid-column:10;grid-row:5"><span class="m17n">46</span>Pd</div>
+            <div class="m17e" style="grid-column:11;grid-row:5"><span class="m17n">47</span>Ag</div>
+            <div class="m17e" style="grid-column:12;grid-row:5"><span class="m17n">48</span>Cd</div>
+            <div class="m17e" style="grid-column:13;grid-row:5"><span class="m17n">49</span>In</div>
+            <div class="m17e" style="grid-column:14;grid-row:5"><span class="m17n">50</span>Sn</div>
+            <div class="m17e" style="grid-column:15;grid-row:5"><span class="m17n">51</span>Sb</div>
+            <div class="m17e" style="grid-column:16;grid-row:5"><span class="m17n">52</span>Te</div>
+            <div class="m17e" style="grid-column:17;grid-row:5"><span class="m17n">53</span>I</div>
+            <div class="m17e" style="grid-column:18;grid-row:5"><span class="m17n">54</span>Xe</div>
+          </div>
+          <div class="mini17-arrow-h">→ Electronegatividad aumenta</div>
+        </div>
+        <div class="mini17-arrow-v">↑ Electronegatividad<br>aumenta</div>
+      </div>
+    </div>`;
+
+    /* ══ PSE Química 2023 — ítems 13 al 19 ═══════════════════ */
+    const quizItems = [
+      {
+        num: 13,
+        miniTable: null,
+        context: "En una empresa de análisis de materiales se necesita contratar a una persona para identificar y clasificar sustancias. La pregunta de la entrevista fue:\n\nDos sustancias M y S se unen y se obtiene un líquido coloreado (X), el cual se destila y da como resultado un líquido (T) cuyo punto de ebullición es de 89 °C y un sólido colorido (L) que no se logra descomponer por métodos químicos ordinarios.",
+        prompt: "Según la información anterior, el oferente que responde de forma correcta indica que",
+        options: [
+          "M, S y T son compuestos.",
+          "X es una mezcla; L es un elemento.",
+          "X es un compuesto; T y L son mezclas.",
+          "L es una mezcla heterogénea; T es un compuesto."
+        ],
+        answer: "X es una mezcla; L es un elemento.",
+        explanation: "Paso 1: X se obtuvo al unir M y S — es una combinación de dos sustancias.\nPaso 2: X se separó por destilación (método físico) → las mezclas se separan por métodos físicos → X es una mezcla.\nPaso 3: L no puede descomponerse por métodos químicos ordinarios → esa es la definición de un elemento puro.\nConclusión: X = mezcla y L = elemento → respuesta correcta: B."
+      },
+      {
+        num: 14,
+        miniTable: null,
+        context: "En una práctica de clase de química se brinda la siguiente información sobre un elemento químico:\n• Es un sólido a temperatura ambiente.\n• Su punto de fusión es superior a los 1500 °C.\n• Tiene una baja afinidad electrónica.\n• Se puede extender fácilmente en láminas.",
+        prompt: "Según las características anteriores, ¿cuál de los siguientes elementos puede corresponder al elemento químico?",
+        options: [
+          "Silicio porque son características de metaloides.",
+          "Hierro porque son características que corresponden a metales.",
+          "Fósforo porque las características corresponden a un no metal.",
+          "Azufre porque son características de no metales."
+        ],
+        answer: "Hierro porque son características que corresponden a metales.",
+        explanation: "Paso 1: \"Se puede extender en láminas\" = maleabilidad → propiedad exclusiva de los metales.\nPaso 2: Los no metales (P, S) tienen alta afinidad electrónica y bajos puntos de fusión → no coincide.\nPaso 3: Los metaloides (Si) tienen conductividad intermedia y no son maleables → no coincide.\nPaso 4: Los metales tienen alto punto de fusión, baja afinidad electrónica y son maleables → coincide con todo.\nPaso 5: El hierro (Fe) funde a 1538 °C (> 1500 °C) y cumple todas las propiedades indicadas.\nConclusión: Corresponde a un metal → respuesta correcta: B (Hierro)."
+      },
+      {
+        num: 15,
+        miniTable: null,
+        context: "En una práctica de clase se presenta la siguiente información sobre un átomo:\n\nPosee 54 electrones y su número atómico es 53.",
+        prompt: "Según la información anterior, los estudiantes concluyen correctamente que corresponde a un átomo que se considera",
+        options: [
+          "neutro.",
+          "catión.",
+          "anión.",
+          "radiactivo."
+        ],
+        answer: "anión.",
+        explanation: "Paso 1: Número atómico = 53 → el átomo tiene 53 protones.\nPaso 2: En un átomo neutro: protones = electrones → debería tener 53 electrones.\nPaso 3: Este átomo tiene 54 electrones (uno más que protones).\nPaso 4: Más electrones que protones → carga neta negativa → es un anión.\n(Un catión tiene MENOS electrones que protones. La radioactividad no depende del número de electrones.)\nConclusión: Corresponde a un anión (I⁻) → respuesta correcta: C."
+      },
+      {
+        num: 16,
+        miniTable: MINI16,
+        context: "Si la distribución de 35 electrones de un átomo neutro llega hasta el nivel 4:",
+        prompt: "El último electrón está ubicado en el subnivel",
+        options: [ "s.", "p.", "d.", "f." ],
+        answer: "p.",
+        explanation: "Paso 1: El elemento con Z = 35 es el Bromo (Br) — observable en la porción de la tabla.\nPaso 2: Distribución electrónica por subniveles (orden de llenado):\n  1s²=2 · 2s²=4 · 2p⁶=10 · 3s²=12 · 3p⁶=18 · 4s²=20 · 3d¹⁰=30 · 4p⁵=35\nPaso 3: El electrón número 35 (el último) queda en el subnivel 4p.\nPaso 4: El subnivel 4p pertenece al nivel 4, lo que confirma el enunciado.\nConclusión: El último electrón está en el subnivel p → respuesta correcta: B."
+      },
+      {
+        num: 17,
+        miniTable: MINI17,
+        context: null,
+        prompt: "Los datos obtenidos se justifican porque las electronegatividades de los átomos participantes en el",
+        options: [
+          "KI son muy parecidas.",
+          "CaO son muy diferentes.",
+          "P₂O₃ son muy diferentes.",
+          "P₂O₃ son muy parecidas."
+        ],
+        answer: "CaO son muy diferentes.",
+        explanation: "Paso 1: Identificar el tipo de enlace por sus propiedades:\n  • KI y CaO → alto punto de fusión + buena conductividad → enlace iónico.\n  • P₂O₃ → bajo punto de fusión + mala conductividad → enlace covalente.\nPaso 2: Los enlaces iónicos se forman cuando la diferencia de electronegatividad es > 1,7.\nPaso 3: Calcular la diferencia para CaO:\n  Ca = 1,0 ; O = 3,44 → diferencia = 2,44 → muy diferente → enlace iónico ✓\nPaso 4: Opción A incorrecta: K (0,82) e I (2,66), diferencia = 1,84 → SÍ son diferentes (no parecidas).\nPaso 5: Opción C incorrecta: P₂O₃ es covalente → P y O no son \"muy diferentes\" (diferencia = 1,25).\nConclusión: El CaO tiene electronegatividades muy diferentes → respuesta correcta: B."
+      },
+      {
+        num: 18,
+        miniTable: null,
+        context: "El hipoclorito de litio es una pastilla o sólido granular blanco con olor a cloro. Se utiliza como agente de saneamiento, desinfección y control de algas en piscinas, así como lejía.",
+        prompt: "Al aplicar las reglas de nomenclatura, la fórmula del hipoclorito de litio corresponde a",
+        options: [ "LiClO", "LiClO₃", "Li₂ClO₂", "LiCl" ],
+        answer: "LiClO",
+        explanation: "Paso 1: Identificar el anión a partir del nombre \"hipoclorito\":\n  Prefijo \"hipo\" + sufijo \"-ito\" → ClO⁻ (cloro en estado de oxidación +1).\nPaso 2: Identificar el catión del litio:\n  Li está en el Grupo 1 → pierde 1 electrón → catión Li⁺.\nPaso 3: Combinar los iones para obtener una fórmula neutra:\n  Li⁺ + ClO⁻ → LiClO (las cargas 1+ y 1− se cancelan, no se necesitan subíndices).\nPaso 4: Descartar otras opciones:\n  • LiClO₃ = clorato de litio (ClO₃⁻).\n  • Li₂ClO₂ = fórmula incorrecta.\n  • LiCl = cloruro de litio (Cl⁻).\nConclusión: La fórmula del hipoclorito de litio es LiClO → respuesta correcta: A."
+      },
+      {
+        num: 19,
+        miniTable: null,
+        context: "Los biocombustibles son una alternativa a los derivados del petróleo. La reacción de combustión del etanol es:\n\nC₂H₅OH + 3 O₂ → 2 CO₂ + 3 H₂O\n\nSe tomaron 75 g de etanol para ejecutar esta reacción.\n(MM C₂H₅OH = 46 g/mol  |  MM CO₂ = 44 g/mol)",
+        prompt: "¿Cuánto dióxido de carbono obtuvieron?",
+        options: [
+          "La misma cantidad en gramos, porque las masas molares tienen casi el mismo valor.",
+          "El doble de los moles de etanol empleados.",
+          "El doble de gramos de etanol empleados.",
+          "La mitad de los gramos de etanol empleados."
+        ],
+        answer: "El doble de los moles de etanol empleados.",
+        explanation: "Paso 1: Leer la relación estequiométrica:\n  1 mol C₂H₅OH produce 2 mol CO₂ → relación 1:2.\nPaso 2: Calcular moles de etanol:\n  75 g ÷ 46 g/mol = 1,63 mol de C₂H₅OH.\nPaso 3: Calcular moles de CO₂:\n  1,63 mol × 2 = 3,26 mol de CO₂.\nPaso 4: Calcular la masa de CO₂:\n  3,26 mol × 44 g/mol = 143,5 g de CO₂.\nPaso 5: Verificar opciones:\n  • A: las masas molares son similares pero la relación molar es 1:2, no 1:1 → incorrecto.\n  • B: mol CO₂ = 2 × mol etanol → ✓ CORRECTO.\n  • C: 2 × 75 g = 150 g ≠ 143,5 g → incorrecto.\nConclusión: Se obtiene el doble de los moles de etanol en CO₂ → respuesta correcta: B."
+      }
+    ];
+
+    quizItems.push(
+      {
+        num: 20,
+        miniTable: null,
+        context: "Un átomo neutro de cloro posee 17 electrones. Al completar su distribución electrónica, los electrones ocupan niveles y subniveles en orden creciente de energía hasta llegar al tercer nivel.",
+        prompt: "Según esa distribución electrónica, el último electrón del cloro se ubica en el subnivel",
+        options: [ "s.", "p.", "d.", "f." ],
+        answer: "p.",
+        explanation: "Paso 1: El cloro tiene 17 electrones.\nPaso 2: Su distribución termina en 3p⁵.\nPaso 3: Por eso, el último electrón está en un subnivel p.\nConclusión: respuesta correcta: p."
+      },
+      {
+        num: 21,
+        miniTable: null,
+        context: "En una práctica se comparan tres compuestos: NaCl, MgO y CO₂. El cloruro de sodio y el óxido de magnesio presentan altos puntos de fusión y forman iones; el dióxido de carbono presenta enlace covalente. Además, el magnesio tiene baja electronegatividad y el oxígeno alta electronegatividad.",
+        prompt: "Los datos se explican porque las electronegatividades de los átomos participantes en el",
+        options: [
+          "CO₂ son muy diferentes.",
+          "MgO son muy diferentes.",
+          "NaCl son muy parecidas.",
+          "MgO son muy parecidas."
+        ],
+        answer: "MgO son muy diferentes.",
+        explanation: "Paso 1: Un enlace iónico se favorece cuando la diferencia de electronegatividad es grande.\nPaso 2: El magnesio es metálico y el oxígeno no metálico; sus electronegatividades son muy distintas.\nPaso 3: Esa diferencia permite explicar el carácter iónico y el alto punto de fusión del MgO.\nConclusión: respuesta correcta: MgO son muy diferentes."
+      },
+      {
+        num: 22,
+        miniTable: null,
+        context: "En una experiencia de laboratorio, una persona estudiante compara dos muestras metálicas. La primera contiene litio y la segunda contiene sodio. Al colocarlas por separado en agua, ambas reaccionan rápidamente y producen hidrógeno gaseoso y un compuesto de carácter básico.\n\nLa semejanza en el comportamiento químico se explica porque ambos elementos poseen un electrón en su nivel energético más externo y tienden a perderlo durante la formación de compuestos.",
+        prompt: "De acuerdo con la información anterior, ¿cuál opción contiene únicamente elementos que presentarían un comportamiento químico semejante?",
+        options: [
+          "Litio y sodio.",
+          "Berilio y magnesio.",
+          "Sodio y calcio.",
+          "Potasio y bario."
+        ],
+        answer: "Litio y sodio.",
+        explanation: "Paso 1: Litio y sodio pertenecen al grupo 1.\nPaso 2: Los elementos del grupo 1 tienen un electrón de valencia y tienden a perderlo.\nPaso 3: Por eso presentan comportamiento químico semejante.\nConclusión: respuesta correcta: Litio y sodio."
+      },
+      {
+        num: 23,
+        miniTable: null,
+        context: "Algunos compuestos que contienen calcio, magnesio o bario son utilizados en la fabricación de materiales de construcción, medicamentos y suplementos nutricionales. Estos elementos presentan dos electrones en su nivel energético más externo y, al formar compuestos, tienden a perderlos para alcanzar una configuración electrónica más estable.",
+        prompt: "Según su ubicación en la tabla periódica y su comportamiento químico, ¿cuál pareja está formada únicamente por elementos de esta familia?",
+        options: [
+          "Sodio y potasio.",
+          "Calcio y bario.",
+          "Magnesio y aluminio.",
+          "Estroncio y rubidio."
+        ],
+        answer: "Calcio y bario.",
+        explanation: "Paso 1: Calcio, magnesio y bario pertenecen al grupo 2.\nPaso 2: Los elementos del grupo 2 son metales alcalinotérreos y suelen perder dos electrones.\nPaso 3: Calcio y bario están en esa misma familia.\nConclusión: respuesta correcta: Calcio y bario."
+      },
+      {
+        num: 24,
+        miniTable: null,
+        context: "En el tratamiento del agua potable se emplean sustancias que contienen cloro. Asimismo, algunos productos para el cuidado dental contienen compuestos de flúor. Aunque estos elementos poseen propiedades físicas diferentes, ambos tienen siete electrones de valencia y suelen ganar un electrón cuando reaccionan con metales.",
+        prompt: "¿Cuál opción contiene únicamente elementos pertenecientes a la misma familia que el flúor y el cloro?",
+        options: [
+          "Oxígeno y azufre.",
+          "Flúor y bromo.",
+          "Cloro y argón.",
+          "Bromo y selenio."
+        ],
+        answer: "Flúor y bromo.",
+        explanation: "Paso 1: Flúor y cloro pertenecen al grupo 17.\nPaso 2: Los elementos del grupo 17 son halógenos y tienen siete electrones de valencia.\nPaso 3: El bromo también pertenece a esa familia.\nConclusión: respuesta correcta: Flúor y bromo."
+      },
+      {
+        num: 25,
+        miniTable: null,
+        context: "Las lámparas y los anuncios luminosos pueden contener gases como neón, argón o xenón. Estos elementos presentan una configuración electrónica externa estable, por lo que poseen una baja tendencia a ganar, perder o compartir electrones en condiciones ordinarias.",
+        prompt: "¿Cuál pareja presenta las características químicas descritas?",
+        options: [
+          "Helio y neón.",
+          "Hidrógeno y helio.",
+          "Argón y cloro.",
+          "Neón y flúor."
+        ],
+        answer: "Helio y neón.",
+        explanation: "Paso 1: Neón, argón, xenón y helio son gases nobles.\nPaso 2: Los gases nobles poseen capas externas estables.\nPaso 3: Por eso tienen baja tendencia a reaccionar.\nConclusión: respuesta correcta: Helio y neón."
+      },
+      {
+        num: 26,
+        miniTable: null,
+        context: "La posición horizontal de un elemento en la tabla periódica permite determinar la cantidad de niveles principales de energía ocupados por sus electrones. Por ejemplo, los elementos del tercer período presentan electrones distribuidos en tres niveles principales de energía.",
+        prompt: "¿Cuál pareja está constituida únicamente por elementos cuyos átomos poseen tres niveles principales de energía?",
+        options: [
+          "Litio y berilio.",
+          "Sodio y magnesio.",
+          "Potasio y calcio.",
+          "Magnesio y calcio."
+        ],
+        answer: "Sodio y magnesio.",
+        explanation: "Paso 1: El período indica la cantidad de niveles principales de energía.\nPaso 2: Sodio y magnesio están en el período 3.\nPaso 3: Por eso ambos poseen tres niveles principales de energía.\nConclusión: respuesta correcta: Sodio y magnesio."
+      },
+      {
+        num: 27,
+        miniTable: null,
+        context: "El sodio es un metal que forma parte de sustancias como el cloruro de sodio. Su átomo posee tres niveles principales de energía y un electrón en el nivel más externo. Durante una reacción química, tiende a perder ese electrón y formar el ion Na⁺.",
+        prompt: "¿Cuál opción describe correctamente la ubicación y clasificación del sodio en la tabla periódica?",
+        options: [
+          "Metal alcalino del período 3.",
+          "Metal alcalinotérreo del período 3.",
+          "Halógeno del período 1.",
+          "Gas noble del período 3."
+        ],
+        answer: "Metal alcalino del período 3.",
+        explanation: "Paso 1: El sodio está en el grupo 1, por eso es un metal alcalino.\nPaso 2: Está en el período 3, por eso tiene tres niveles principales de energía.\nConclusión: respuesta correcta: Metal alcalino del período 3."
+      },
+      {
+        num: 28,
+        miniTable: null,
+        context: "El calcio participa en la formación y el mantenimiento de huesos y dientes. Su átomo posee cuatro niveles principales de energía y dos electrones en su nivel más externo. Al formar compuestos, normalmente pierde esos dos electrones y se convierte en el ion Ca²⁺.",
+        prompt: "A partir de su configuración electrónica y su comportamiento químico, ¿a cuál familia pertenece el calcio?",
+        options: [
+          "Metales alcalinos.",
+          "Metales alcalinotérreos.",
+          "Halógenos.",
+          "Gases nobles."
+        ],
+        answer: "Metales alcalinotérreos.",
+        explanation: "Paso 1: El calcio tiene dos electrones de valencia.\nPaso 2: Los elementos del grupo 2 se llaman metales alcalinotérreos.\nPaso 3: El calcio pertenece al grupo 2.\nConclusión: respuesta correcta: Metales alcalinotérreos."
+      },
+      {
+        num: 29,
+        miniTable: null,
+        context: "El oxígeno es indispensable para la respiración celular, mientras que el azufre forma parte de algunas proteínas. A pesar de sus diferencias, ambos elementos poseen seis electrones de valencia y se encuentran en la misma columna de la tabla periódica.",
+        prompt: "¿Cuál elemento presenta una distribución de electrones de valencia semejante a la del oxígeno?",
+        options: [
+          "Cloro.",
+          "Nitrógeno.",
+          "Azufre.",
+          "Neón."
+        ],
+        answer: "Azufre.",
+        explanation: "Paso 1: El oxígeno está en el grupo 16.\nPaso 2: Los elementos de un mismo grupo tienen igual cantidad de electrones de valencia.\nPaso 3: El azufre también está en el grupo 16.\nConclusión: respuesta correcta: Azufre."
+      },
+      {
+        num: 30,
+        miniTable: null,
+        context: "Cuando el potasio reacciona con un elemento no metálico, pierde el único electrón que posee en su nivel energético más externo. De esta manera, alcanza una configuración electrónica más estable y se transforma en un ion positivo.",
+        prompt: "¿Cuál es el número de oxidación más frecuente del potasio en sus compuestos?",
+        options: [
+          "−2.",
+          "−1.",
+          "+1.",
+          "+2."
+        ],
+        answer: "+1.",
+        explanation: "Paso 1: El potasio pertenece al grupo 1.\nPaso 2: Los metales alcalinos pierden un electrón al formar compuestos.\nPaso 3: Al perder un electrón, el potasio queda con carga +1.\nConclusión: respuesta correcta: +1."
+      },
+      {
+        num: 31,
+        miniTable: null,
+        context: "El magnesio reacciona con el oxígeno para formar óxido de magnesio, MgO. En este compuesto, el oxígeno presenta un número de oxidación de −2. Como el compuesto es eléctricamente neutro, la suma de los números de oxidación debe ser igual a cero.",
+        prompt: "A partir de esta información, ¿cuál es el número de oxidación del magnesio en el MgO?",
+        options: [
+          "−2.",
+          "+1.",
+          "+2.",
+          "+3."
+        ],
+        answer: "+2.",
+        explanation: "Paso 1: El oxígeno aporta −2.\nPaso 2: El compuesto MgO es neutro, por lo que el magnesio debe compensar esa carga.\nPaso 3: Para que la suma sea cero, el magnesio debe ser +2.\nConclusión: respuesta correcta: +2."
+      },
+      {
+        num: 32,
+        miniTable: null,
+        context: "El óxido de aluminio posee la fórmula Al₂O₃. En los óxidos, el oxígeno generalmente presenta un número de oxidación de −2. Por lo tanto, los tres átomos de oxígeno aportan una carga aparente total de −6. Para que el compuesto sea eléctricamente neutro, los dos átomos de aluminio deben aportar conjuntamente una carga aparente de +6.",
+        prompt: "¿Cuál es el número de oxidación de cada átomo de aluminio?",
+        options: [
+          "−3.",
+          "+1.",
+          "+2.",
+          "+3."
+        ],
+        answer: "+3.",
+        explanation: "Paso 1: Tres oxígenos con −2 aportan −6.\nPaso 2: Los dos aluminios deben aportar +6 en total.\nPaso 3: Si +6 se reparte entre dos átomos de aluminio, cada uno tiene +3.\nConclusión: respuesta correcta: +3."
+      },
+      {
+        num: 33,
+        miniTable: null,
+        context: "El hierro es un metal de transición que puede formar diferentes compuestos con el oxígeno. En el compuesto FeO, el átomo de hierro compensa el número de oxidación −2 del oxígeno. En el compuesto Fe₂O₃, los tres átomos de oxígeno aportan en total −6, por lo que los dos átomos de hierro deben aportar conjuntamente +6.",
+        prompt: "¿Cuáles son, respectivamente, los números de oxidación del hierro en FeO y Fe₂O₃?",
+        options: [
+          "+1 y +2.",
+          "+2 y +3.",
+          "+3 y +4.",
+          "−2 y −3."
+        ],
+        answer: "+2 y +3.",
+        explanation: "Paso 1: En FeO, el oxígeno es −2, por lo que el hierro debe ser +2.\nPaso 2: En Fe₂O₃, los tres oxígenos suman −6.\nPaso 3: Los dos hierros deben sumar +6, así que cada hierro es +3.\nConclusión: respuesta correcta: +2 y +3."
+      },
+      {
+        num: 34,
+        miniTable: null,
+        context: "Una persona estudiante analiza un elemento desconocido y determina las siguientes características:\n\nPosee cuatro niveles principales de energía.\nTiene siete electrones en su nivel más externo.\nCuando reacciona con un metal, tiende a ganar un electrón.\nForma un ion con carga −1.",
+        prompt: "¿Cuál elemento presenta estas características?",
+        options: [
+          "Potasio.",
+          "Calcio.",
+          "Bromo.",
+          "Kriptón."
+        ],
+        answer: "Bromo.",
+        explanation: "Paso 1: Cuatro niveles principales indican período 4.\nPaso 2: Siete electrones de valencia indican grupo 17.\nPaso 3: El elemento del período 4 y grupo 17 es el bromo.\nConclusión: respuesta correcta: Bromo."
+      },
+      {
+        num: 35,
+        miniTable: null,
+        context: "Dos elementos desconocidos, representados como X y Z, presentan las siguientes características:\n\nEl elemento X pertenece al grupo 1 y al período 3.\nEl elemento Z pertenece al grupo 17 y al período 3.\nX tiende a perder un electrón y Z tiende a ganar un electrón.",
+        prompt: "¿Cuáles elementos corresponden, respectivamente, a X y Z?",
+        options: [
+          "Sodio y cloro.",
+          "Magnesio y azufre.",
+          "Litio y flúor.",
+          "Potasio y bromo."
+        ],
+        answer: "Sodio y cloro.",
+        explanation: "Paso 1: Grupo 1 y período 3 corresponde al sodio.\nPaso 2: Grupo 17 y período 3 corresponde al cloro.\nPaso 3: El sodio pierde un electrón y el cloro gana uno.\nConclusión: respuesta correcta: Sodio y cloro."
+      },
+      {
+        num: 36,
+        miniTable: null,
+        context: "Se analiza un elemento situado en el período 4 y en el grupo 2 de la tabla periódica. Debido a su ubicación, sus átomos poseen cuatro niveles principales de energía y dos electrones de valencia. Este elemento suele formar iones con carga +2.",
+        prompt: "¿Cuál elemento cumple con todas las características descritas?",
+        options: [
+          "Potasio.",
+          "Calcio.",
+          "Galio.",
+          "Bromo."
+        ],
+        answer: "Calcio.",
+        explanation: "Paso 1: El período 4 indica cuatro niveles principales de energía.\nPaso 2: El grupo 2 indica dos electrones de valencia.\nPaso 3: El elemento en período 4 y grupo 2 es el calcio.\nConclusión: respuesta correcta: Calcio."
+      },
+      {
+        num: 37,
+        miniTable: null,
+        context: "El cloruro de calcio presenta la fórmula CaCl₂. El calcio pertenece al grupo 2 y forma el ion Ca²⁺, mientras que cada átomo de cloro gana un electrón y forma el ion Cl⁻.",
+        prompt: "¿Cuál explicación justifica correctamente la presencia de dos átomos de cloro en la fórmula?",
+        options: [
+          "Cada átomo de cloro presenta una carga de −1 y se necesitan dos para compensar la carga +2 del calcio.",
+          "Cada átomo de cloro presenta una carga de −2 y se necesita uno para compensar al calcio.",
+          "El calcio tiene carga +1 y cada cloro presenta carga −1.",
+          "El calcio y el cloro poseen el mismo número de oxidación."
+        ],
+        answer: "Cada átomo de cloro presenta una carga de −1 y se necesitan dos para compensar la carga +2 del calcio.",
+        explanation: "Paso 1: El calcio forma Ca²⁺.\nPaso 2: Cada cloro forma Cl⁻.\nPaso 3: Se necesitan dos iones cloruro para compensar la carga +2 del calcio.\nConclusión: respuesta correcta: cada átomo de cloro tiene −1 y se necesitan dos."
+      }
+    );
+
+    /* ══ Practice overlay logic ═══════════════════════════════ */
+    let pItemIdx = 0;
+    let pAnswered = false;
+    let pCorrectCount = 0;
+    let pAttemptCount = 0;
+    let savedScrollY = 0;
+
+    function openPractice() {
+      savedScrollY = window.scrollY || 0;
+      pCorrectCount = 0;
+      pAttemptCount = 0;
+      $("#pCorrectSpan").textContent  = 0;
+      $("#pAttemptsSpan").textContent = 0;
+      renderPItem(0);
+      $("#practiceOverlay").classList.add("open");
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    function closePractice() {
+      $("#practiceOverlay").classList.remove("open");
+      document.documentElement.style.overflow = "";
+      window.scrollTo(0, savedScrollY);
+    }
+
+    function openVideos() {
+      savedScrollY = window.scrollY || 0;
+      $("#videosOverlay").classList.add("open");
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    function closeVideos() {
+      $("#videosOverlay").classList.remove("open");
+      document.documentElement.style.overflow = "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderPItem(idx) {
+      pItemIdx  = idx;
+      pAnswered = false;
+      const item = quizItems[idx];
+      $("#pItemBadge").textContent = `Ítem ${idx + 1}`;
+      $("#pCounter").textContent   = `${idx + 1} / ${quizItems.length}`;
+      $("#pPrev").disabled = idx === 0;
+      $("#pNext").disabled = idx === quizItems.length - 1;
+      const miniEl = $("#pMiniTable");
+      if (item.miniTable) {
+        miniEl.innerHTML = item.miniTable;
+        miniEl.hidden = false;
+      } else {
+        miniEl.innerHTML = "";
+        miniEl.hidden = true;
+      }
+      const ctx = $("#pContext");
+      if (item.context) {
+        ctx.textContent = item.context;
+        ctx.hidden = false;
+      } else {
+        ctx.hidden = true;
+      }
+      $("#pQuestion").textContent = item.prompt;
+      const opts = $("#pOptions");
+      opts.innerHTML = "";
+      shuffle(item.options).forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "p-opt";
+        btn.type = "button";
+        btn.dataset.value = opt;
+        btn.innerHTML = `<span class="p-mark" aria-hidden="true"></span><span class="p-text">${opt}</span>`;
+        btn.addEventListener("click", () => answerPItem(btn, item));
+        opts.appendChild(btn);
+      });
+      const expl = $("#pExplanation");
+      expl.innerHTML = "";
+      expl.hidden = true;
+    }
+
+    function answerPItem(btn, item) {
+      if (pAnswered) return;
+      pAnswered = true;
+      const value = btn.dataset.value;
+      const isCorrect = normalize(value) === normalize(item.answer);
+      pAttemptCount++;
+      if (isCorrect) pCorrectCount++;
+      $("#pCorrectSpan").textContent  = pCorrectCount;
+      $("#pAttemptsSpan").textContent = pAttemptCount;
+      document.querySelectorAll(".p-opt").forEach(b => {
+        b.disabled = true;
+        if (normalize(b.dataset.value) === normalize(item.answer)) {
+          b.classList.add("p-correct");
+          b.querySelector(".p-mark").textContent = "✓";
+        }
+      });
+      if (!isCorrect) {
+        btn.classList.add("p-wrong");
+        btn.querySelector(".p-mark").textContent = "✗";
+      }
+      const expl = $("#pExplanation");
+      expl.innerHTML = item.explanation
+        .split("\n")
+        .map(line => line.trim() ? `<p>${line}</p>` : "")
+        .join("");
+      expl.hidden = false;
+      setTimeout(() => expl.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+    }
+
+    $("#closePractice").addEventListener("click", closePractice);
+    $("#pPrev").addEventListener("click", () => { if (pItemIdx > 0) renderPItem(pItemIdx - 1); });
+    $("#pNext").addEventListener("click", () => { if (pItemIdx < quizItems.length - 1) renderPItem(pItemIdx + 1); });
+    $("#openVideos").addEventListener("click", openVideos);
+    $("#closeVideos").addEventListener("click", closeVideos);
+
     renderLegend();
     renderTables();
     populateFilters();
@@ -1178,9 +2324,20 @@
       applyFilters();
     });
     $("#randomElement").addEventListener("click", () => selectElement(pickElement().symbol, true));
-    $("#speakSelected").addEventListener("click", () => speakElement(selected));
     $("#speakIntro").addEventListener("click", () => speak("Usa la búsqueda para localizar elementos por nombre, símbolo o número atómico. Toca una casilla para ver la ficha. En ejercicios, responde y compara grupo, periodo, familia y masa atómica."));
-    $("#startExercise").addEventListener("click", makeQuestion);
+    $("#stopAudio").addEventListener("click", () => {
+      window.speechSynthesis.cancel();
+      stopBtn().classList.remove("active");
+      document.querySelectorAll(".fact-btn").forEach(b => b.classList.remove("playing"));
+    });
+
+    document.querySelectorAll(".fact-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!selected) return;
+        speakFact(btn, btn.dataset.fact, selected);
+      });
+    });
+    $("#startExercise").addEventListener("click", openPractice);
     $("#nextQuestion").addEventListener("click", makeQuestion);
     $("#speakQuestion").addEventListener("click", () => currentQuestion && speak(currentQuestion.prompt));
     $("#voiceAnswer").addEventListener("click", voiceAnswer);
