@@ -1071,6 +1071,83 @@
       .video-card { grid-template-columns: 1fr; }
       .video-card em { justify-self: start; }
     }
+
+    @media (max-width: 560px) {
+      .practice-overlay.open {
+        grid-template-rows: auto 1fr;
+      }
+
+      .pov-header {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 10px;
+        gap: 8px;
+      }
+
+      .pov-header .btn {
+        width: 100%;
+      }
+
+      .pov-title,
+      .pov-score {
+        white-space: normal;
+        text-align: center;
+      }
+
+      .pov-body {
+        padding: 8px;
+      }
+
+      .pov-panel {
+        padding: 12px;
+        gap: 12px;
+      }
+
+      .pov-item-head {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .pov-item-badge {
+        align-self: flex-start;
+      }
+
+      .pov-nav {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        width: 100%;
+        gap: 6px;
+      }
+
+      .pov-nav .btn {
+        min-width: 0;
+        width: 100%;
+        padding: 8px 6px;
+        font-size: .78rem;
+      }
+
+      .pov-nav-counter {
+        align-self: center;
+        font-size: .78rem;
+        padding: 0 2px;
+      }
+
+      .pov-context,
+      .pov-explanation {
+        font-size: .9rem;
+        padding: 12px;
+      }
+
+      .pov-question {
+        font-size: 1.02rem;
+      }
+
+      .p-opt {
+        font-size: .94rem;
+        padding: 11px 12px;
+      }
+    }
   </style>
 </head>
 <body>
